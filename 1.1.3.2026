@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platforma Educație Socială & Juridică</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- STILURI GENERALE --- */
+        :root {
+            --primary: #4e54c8;
+            --primary-dark: #3c40c6;
+            --accent: #ff4757;
+            --bg-color: #f1f2f6;
+            --text-dark: #2f3542;
+            --kahoot-color: #46178f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* NAVIGARE */
+        nav { background: var(--primary); padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
+        .nav-links { list-style: none; display: flex; gap: 5px; overflow-x: auto; align-items: center; justify-content: flex-start; flex-wrap: wrap; }
+        .nav-links::-webkit-scrollbar { height: 0; }
+        .nav-links li a { display: block; color: rgba(255, 255, 255, 0.85); text-decoration: none; padding: 18px 15px; font-weight: 500; font-size: 0.95rem; border-bottom: 4px solid transparent; transition: 0.3s; white-space: nowrap; }
+        .nav-links li a:hover, .nav-links li a.active { color: white; background: rgba(255,255,255,0.1); border-bottom-color: var(--accent); }
+        .menu-toggle { display: none; padding: 15px; color: white; font-size: 1.5rem; cursor: pointer; background: var(--primary-dark); text-align: center; }
+
+        /* BUTON LOGARE */
+        .auth-container { margin-left: auto; display: flex; align-items: center; padding-right: 15px; }
+        .btn-login { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: 20px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3); }
+        .btn-login:hover { background: #ff3344; transform: translateY(-2px); }
+        
+        .user-profile { display: none; align-items: center; gap: 12px; color: white; }
+        .user-pic { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+        .user-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+        /* CONȚINUT */
+        main { flex: 1; padding: 40px 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        h2.page-title { text-align: center; font-size: 2rem; color: var(--primary-dark); margin-bottom: 40px; position: relative; padding-bottom: 15px; font-weight: 700; }
+        h2.page-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 5px; background: var(--accent); border-radius: 5px; }
+
+        /* CARDURI LECȚII */
+        .lessons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px; }
+        .lesson-card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+        .lesson-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); border-color: var(--primary); }
+
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-bottom: 1px solid #eee; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .no-video { height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #b2bec3; flex-direction: column; text-align: center; padding: 20px; border-bottom: 1px solid #eee; }
+
+        .lesson-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .lesson-title { font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 10px; font-weight: 700; }
+        .lesson-desc { font-size: 0.9rem; color: #555; margin-bottom: 15px; line-height: 1.5; flex-grow: 1; }
+
+        .resources-row { display: flex; gap: 10px; margin-top: auto; }
+        .btn-res { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 10px; border-radius: 6px; text-decoration: none; color: white; font-size: 0.85rem; font-weight: 600; transition: 0.2s; cursor: pointer; border: none; }
+        .btn-kahoot { background: var(--kahoot-color); }
+        .btn-kahoot:hover { opacity: 0.9; }
+        .btn-disabled { background: #dcdde1; color: #7f8fa6; cursor: not-allowed; }
+
+        /* ALTE PAGINI */
+        .contact-mega-box { background: white; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-top: 8px solid var(--accent); overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; }
+        .contact-content { padding: 40px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+        .btn-send { width: 100%; padding: 12px; background: var(--accent); color: white; font-weight: bold; border:none; border-radius:8px; cursor:pointer;}
+        
+        .olympiad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .olympiad-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; text-align: center; padding-bottom: 20px; transition: 0.3s;}
+        .olympiad-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .oly-header { padding: 30px; color: white; margin-bottom: 15px; }
+        .oly-header h3 { margin-top: 10px; font-size: 1.3rem; }
+        
+        .subpage-nav { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .subpage-btn { padding: 8px 20px; border: 2px solid var(--primary); border-radius: 20px; background: white; color: var(--primary); font-weight:600; cursor: pointer; transition: 0.3s;}
+        .subpage-btn:hover { background: #f1f2f6; }
+        .subpage-btn.active { background: var(--primary); color: white; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #666; cursor: pointer; font-weight: 600; }
+
+        .oly-year-card { background: #f8f9fa; border-left: 5px solid var(--accent); padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .oly-year-card h4 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .doc-links-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .btn-doc { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: white; border: 1px solid #ccc; color: var(--text-dark); border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .btn-doc:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px);}
+        .btn-doc-important { background: var(--accent); color: white; border-color: var(--accent); }
+        .btn-doc-important:hover { background: #ff3344; }
+
+        /* Stiluri Recomandări */
+        .rec-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: left; }
+        .rec-category { margin-bottom: 35px; }
+        .rec-category h4 { color: var(--primary-dark); font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .rec-list { list-style: none; padding: 0; }
+        .rec-list li { margin-bottom: 20px; padding-left: 25px; position: relative; line-height: 1.6; }
+        .rec-list li::before { content: '👉'; position: absolute; left: 0; top: 2px; }
+        .rec-title { font-weight: 700; color: #333; font-size: 1.05rem; }
+        .rec-author { font-style: italic; color: var(--accent); font-weight: 600; }
+        .rec-desc { color: #555; font-size: 0.95rem; display: block; margin-top: 5px; }
+        .btn-download-sm { display: inline-flex; align-items: center; gap: 6px; padding: 6px 15px; background: #2ecc71; color: white; border-radius: 20px; text-decoration: none; font-size: 0.85rem; font-weight: bold; margin-top: 8px; transition: 0.3s; box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4); }
+        .btn-download-sm:hover { background: #27ae60; transform: translateY(-2px); }
+
+        /* Ceasuri globale */
+        .clocks-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: center; margin-top: 10px; }
+        .clock-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .clock-time { font-size: 2rem; font-weight: 700; color: var(--primary-dark); margin: 5px 0; font-variant-numeric: tabular-nums;}
+        .clock-date { font-size: 0.9rem; color: #7f8fa6; font-weight: 500; }
+
+        footer { background: #2d3436; color: #b2bec3; text-align: center; padding: 30px; margin-top: auto; }
+
+        @media (max-width: 768px) {
+            nav { display: none; width: 100%; } 
+            nav.active { display: block; }
+            .nav-links { flex-direction: column; padding: 10px 0; align-items: stretch;} 
+            .auth-container { margin: 10px auto; padding: 0; justify-content: center; }
+            .menu-toggle { display: block; }
+            .contact-mega-box { grid-template-columns: 1fr; }
+            .doc-links-container { flex-direction: column; }
+            .btn-doc { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-toggle" onclick="document.querySelector('nav').classList.toggle('active')">
+        <i class="fas fa-bars"></i> Meniu Navigare
+    </div>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="#" onclick="render('acasa')" class="active">Acasă</a></li>
+            <li><a href="#" onclick="render('sociala')">Ed. socială</a></li>
+            <li><a href="#" onclick="render('juridica')" style="color: #ffda79;">Ed. juridică</a></li>
+            <li><a href="#" onclick="render('olimpiada')">Olimpiadă</a></li>
+            <li><a href="#" onclick="render('docs')">Documentație</a></li>
+            <li><a href="#" onclick="render('galerie')">Galerie Foto</a></li>
+            <li><a href="#" onclick="render('contact')">Contact</a></li>
+            
+            <li class="auth-container">
+                <button id="btn-login-google" class="btn-login">
+                    <i class="fab fa-google"></i> Conectare
+                </button>
+                <div id="user-profile-info" class="user-profile">
+                    <img id="user-avatar" class="user-pic" src="" alt="Avatar">
+                    <span id="user-display-name" class="user-name"></span>
+                    <button id="btn-logout-google" class="btn-logout">Ieșire</button>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <main id="app"></main>
+
+    <footer><p>© 2026 Platforma educațională națională.</p></footer>
+
+    <script>
+        // --- BAZA DE DATE COMPLETA ---
+        const db = {
+            'clasa5': { 
+                title: 'Gândire critică și drepturile copilului', 
+                lessons: [
+                    {t: 'Dreptul la informare', d: 'Ne mirăm! Ne întrebăm!', vid: 'https://drive.google.com/file/d/1YGmJq8_-zTeM8l7gBAl2NYsKG76fRx3x/preview'},
+                    {t: 'Ne informăm responsabil', d: 'Pe cine și cum întrebăm?', vid: 'https://drive.google.com/file/d/1r-Ll8hNZLh4YHSs3MZKOtXbPtaKGOwOx/preview'},
+                    {t: 'Fapte și opinii', d: 'Cum facem diferența corect.', vid: 'https://drive.google.com/file/d/1N3G4O216KmR9cfNPszyWo_sxg486KU7M/preview'},
+                    {t: 'Copiii au dreptul la opinie!', d: 'Importanța exprimării libere.', vid: 'https://drive.google.com/file/d/1k7crcmRs01LaX0plqy6lkNNTcUtmiozI/preview'},
+                    {t: 'Opinii diferite', d: 'Schimbăm, comparăm, respectăm opinii diferite!', vid: 'https://drive.google.com/file/d/19HplQ6Sn6scgvYMoC4Tuytb4qK4Y6j--/preview'},
+                    {t: 'Cum ne formulăm opiniile?', d: 'Reguli pentru o exprimare eficientă.', vid: 'https://drive.google.com/file/d/13MLXxQjGHPCv3M7jo5l8aAHp_OZT-L44/preview'},
+                    {t: 'Argumente', d: 'Susținem opinii, cântărim argumente.', vid: 'https://drive.google.com/file/d/1LityU7BwTpfhFY1-0kwgWKPC98e2Yr3i/preview'},
+                    {t: 'Fără discriminare!', d: 'Fii liber! Fără prejudecăți.', vid: 'https://drive.google.com/file/d/1WIY0qc-pS8LAYIluj_JDabjPhbZRHwBM/preview'},
+                    {t: 'Dreptul la familie', d: 'Am drepturi și responsabilități în familie.', vid: 'https://drive.google.com/file/d/1Hln3N_nozxh4ccfkLoZmeik9S6YuiNOl/preview'},
+                    {t: 'Cine sunt eu?', d: 'Dreptul la identitate.', vid: 'https://drive.google.com/file/d/1_ynjBWs9ciShYdUh4SVzRIUlZo7CGYim/preview'},
+                    {t: 'Convenția ONU', d: 'Privire asupra drepturilor copilului.', vid: 'https://drive.google.com/file/d/1IcSRBxjJ1eYhnrBgyecDnVJct8E0F5ZZ/preview'},
+                    {t: 'Dreptul la educație', d: 'Importanța educației în viața copiilor.', vid: 'https://drive.google.com/file/d/13MLXxQjGHPCv3M7jo5l8aAHp_OZT-L44/preview'},
+                    {t: 'Opinia ta, o superputere', d: 'Cum să fii auzit și respectat.', vid: 'https://drive.google.com/file/d/1USe7m0J7tXPKwPe4Ihh_356pk0vzKpSv/preview'},
+                    {t: 'Dreptul la joc', d: 'Activități recreative.', vid: 'https://drive.google.com/file/d/1vMzkkP5Vbe3LM1jpKJxxwxJJWHp_jEs6/preview'},
+                    {t: 'Copiii, promotori', d: 'Ai propriilor drepturi.', vid: 'https://drive.google.com/file/d/1r9Z0GHCNUGUV9jyYWSHvMW_ZQ7FYSXR2/preview'},
+                    {t: 'Protecția mediului', d: 'Condiție a vieții și a sănătății.', vid: 'https://drive.google.com/file/d/13DX_LL1U078tWUi-KLmWahTsz61fC9pq/preview'},
+                    {t: 'Securitate și protecție socială', d: 'Dreptul la o viață sigură.', vid: 'https://drive.google.com/file/d/1ObN42Se_X4asifmMylfaPhtbgAdeJvjs/preview'},
+                    {t: 'Nu violenței!', d: 'Protecție împotriva abuzului și exploatării.', vid: 'https://drive.google.com/file/d/10kTIGbjXms6TsQYIeRK8ZYtsxMKXfiIA/preview'},
+                    {t: 'Școala ca spațiu de exprimare', d: 'Exercitarea drepturilor la școală.', vid: 'https://drive.google.com/file/d/1NrK32deAQxMvPUtNiuvB6hMRuPl4jVwB/preview'},
+                    {t: 'Instituții guvernamentale', d: 'Rolul statului în realizarea securității.', vid: 'https://drive.google.com/file/d/1Hp7HDelz-FqMw7LydxQ_J88Tqey0HaVc/preview'},
+                    {t: 'Organizații nonguvernamentale', d: 'Rolul societății civile.', vid: 'https://drive.google.com/file/d/1kSNUwUbZUqB8OLZPAkMBdXP-wJzHD89B/preview'},
+                    {t: 'Proiect educațional', d: 'Alegerea temei proiectului.', vid: 'https://drive.google.com/file/d/1NiCnrwCivcUsbZfMxH2Fn4Pk5aFJ8iJz/preview'},
+                    {t: 'Derularea proiectului', d: 'Activități concrete și evaluare.', vid: 'https://drive.google.com/file/d/1LHhPKxIRyBwZhwh-syf1ZmwJCfHXNTeW/preview'}
+                ] 
+            },
+            'clasa6': { title: 'Educație interculturală', lessons: [{t: 'Tradiții și obiceiuri', d: 'Diversitatea culturală.'}, {t: 'Toleranța', d: 'Respectul reciproc.'}] },
+            'clasa7': { title: 'Educație pentru cetățenie democratică', lessons: [{t: 'Constituția României', d: 'Legea fundamentală.'}, {t: 'Votul', d: 'Procesul electoral.'}] },
+            'clasa8': { title: 'Educație economico-financiară', lessons: [{t: 'Banii', d: 'Rolul banilor.'}, {t: 'Bugetul personal', d: 'Gestionarea finanțelor.'}] },
+            
+            'juridica': { 
+                title: 'Educație juridică', 
+                lessons: [
+                    {t: 'Omul și dreptul la viață', d: 'Integritatea fizică, legitima apărare.', k: 'https://create.kahoot.it/share/omul-si-dreptul-la-viata/7d719658-25b0-48d4-ac70-e21d8905dbdb', vid: 'https://drive.google.com/file/d/1tizPsS0zpKa7Yd1lrbqiZrmGRUBkc88z/preview'},
+                    {t: 'Drept și drepturi', d: 'Reguli impuse de stat. Drepturi și obligații.', k: 'https://create.kahoot.it/share/drept-si-drepturi/de841f1f-ffd6-49f1-9565-2130ba404819', vid: 'https://drive.google.com/file/d/1cvylBMkUqRlTdWswLMcYTyVuoqeInl3-/preview'},
+                    {t: 'Individ, societate, stat', d: 'Omul - ființă socială. Statul și Constituția.', k: 'https://create.kahoot.it/share/individ-societate-stat/18462e14-be44-4405-9692-891421eece12', vid: 'https://drive.google.com/file/d/1O-xcy4iLP6yoQgk2sc2j831uEZ7J-BBG/preview'},
+                    {t: 'Identitate și cetățenie', d: 'Certificatul de naștere, buletinul (14 ani).', k: 'https://create.kahoot.it/share/identitate-si-cetatenie/d24e8ffe-8be7-451d-b827-34ef802d78b0', vid: 'https://drive.google.com/file/d/1zD8eJHs2Nm3ed1rVjEfJE05gmCsX7R5G/preview'},
+                    {t: 'Familia noastră', d: 'Căsătoria, rudenia, obligația de întreținere.', k: 'https://create.kahoot.it/share/familia/d0a72383-09c7-4afc-ba58-d7f310571c40', vid: 'https://drive.google.com/file/d/1QdP0EAI-bYw276048m2zuTiRAgNG9hn8/preview'},
+                    {t: 'Tânărul și sănătatea', d: 'Dreptul la sănătate, reguli și responsabilități.', k: 'https://create.kahoot.it/share/tanarul-si-sanatatea/e4b98423-e02f-45ff-8275-ba07f1f10360', vid: 'https://drive.google.com/file/d/1jDJcwmFMarrXL11RfUyTzW5QHSmdryLf/preview'},
+                    {t: 'Viața intimă și de familie', d: 'Inviolabilitatea domiciliului, corespondența.', k: 'https://create.kahoot.it/share/viata-intima-si-de-familie/6378fb21-c4fa-44e9-a816-632953edf495', vid: 'https://drive.google.com/file/d/1NnSYrVnyDSATbvERnWALuC8IB-IdasSY/preview'},
+                    {t: 'Elevul și școala', d: 'Anti-bullying, interdicția telefoanelor, sancțiuni.', k: 'https://create.kahoot.it/share/elevul-si-scoala/8a0bd8b6-46aa-4874-a5f0-f3819055f2a6', vid: 'https://drive.google.com/file/d/1AEeVZNq20NX494DR5EFgDMbxgiUL8wg0/preview'},
+                    {t: 'Circulația și călătoriile', d: 'Reguli pietoni și bicicliști. Ieșirea din țară.', k: 'https://create.kahoot.it/share/circulatia-si-calatoriile/d3ab3028-ef78-4e7a-ab9a-697005b49878', vid: 'https://drive.google.com/file/d/1QbuD-0_yAqxzvHIRVX8pkC3ZGpJYvomB/preview'},
+                    {t: 'Elevul și legea', d: 'Răspunderea penală începe la 14 ani.', k: 'https://create.kahoot.it/share/elevul-si-legea/5f0740d2-8fef-44d7-b8d2-08dcab6ba6b3', vid: 'https://drive.google.com/file/d/1FEQR81dc6AJxHK9-vzXU9zJjHLONa30y/preview'},
+                    {t: 'Oamenii legii', d: 'Rolul polițistului, judecătorului, avocatului.', k: 'https://create.kahoot.it/share/oamenii-legii/1978ccf6-1ecc-4acf-8ef0-187a6f95cefc', vid: 'https://drive.google.com/file/d/187qqh9g-A-fYqkZRMpYRLLlOrIpfgBST/preview'},
+                    {t: 'Libertăți și decizii', d: 'Libera exprimare vs. discursul urii.', k: 'https://create.kahoot.it/share/libertati-si-decizii/c3c193a8-f0fd-4232-833c-dd9ad3a2a8bb', vid: 'https://drive.google.com/file/d/13T-l9q5t7bnv0jvCag1YF63ERmR-Czq1/preview'},
+                    {t: 'Tânărul și munca', d: 'Munca legală de la 16 ani (15 cu acord).', k: 'https://create.kahoot.it/share/tanarul-si-munca/f44f864f-511b-4522-a9aa-2bdb7179f10e', vid: 'https://drive.google.com/file/d/1xXET_K6AXtBDEzuWkpe8lov63rikM0E6/preview'},
+                    {t: 'Noi în online', d: 'Cyberbullying, date personale, fake news.', k: 'https://create.kahoot.it/share/noi-in-online/120bd783-ae83-420f-adee-af4a50e8d4f3', vid: 'https://drive.google.com/file/d/1kP7oamyt3dIOKhMKfwIaRcRg9Lw_NWh9/preview'},
+                    {t: 'Acte, animale, bunuri', d: 'Bunuri găsite, responsabilitatea pentru animale.', k: 'https://create.kahoot.it/share/acte-animale-bunuri/071ee6a2-9700-4178-a3e1-09ce30513f2d', vid: 'https://drive.google.com/file/d/166mLIDpFF_iAmof4vKe5uRndVyMXUo2a/preview'},
+                    {t: 'Procesul judiciar', d: 'Procesul civil vs. penal. Judecarea minorilor.', k: 'https://create.kahoot.it/share/procesul-judiciar/fda99f5b-63ab-4619-9741-0ddb0f9fad94', vid: 'https://drive.google.com/file/d/1jZ27g2wFE8OydxftAqWI_9SDifZDU_0h/preview'}
+                ] 
+            }
+        };
+
+        function updateClocks() {
+            const cities = [
+                { id: 'time-buc', tz: 'Europe/Bucharest' },
+                { id: 'time-lon', tz: 'Europe/London' },
+                { id: 'time-ny',  tz: 'America/New_York' },
+                { id: 'time-tok', tz: 'Asia/Tokyo' }
+            ];
+            const now = new Date();
+            cities.forEach(city => {
+                const timeEl = document.getElementById(city.id + '-t');
+                const dateEl = document.getElementById(city.id + '-d');
+                if (timeEl && dateEl) {
+                    timeEl.innerText = new Intl.DateTimeFormat('ro-RO', { timeZone: city.tz, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now);
+                    dateEl.innerText = new Intl.DateTimeFormat('ro-RO', { timeZone: city.tz, day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+                }
+            });
+        }
+        setInterval(updateClocks, 1000);
+
+        function render(pageId) {
+            // ASCUNDEREA MENIULUI PE MOBIL
+            const navMenu = document.querySelector('nav');
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+
+            const app = document.getElementById('app');
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const btn = document.querySelector(`a[onclick="render('${pageId}')"]`);
+            if(btn) btn.classList.add('active');
+
+            if(pageId === 'acasa') {
+                app.innerHTML = `
+                    <div style="background: white; border-radius: 20px; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 40px;">
+                        <div style="background: linear-gradient(135deg, #4e54c8, #8f94fb); padding: 60px 20px; text-align: center; color: white;">
+                            <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Bine ai venit pe Platformă!</h1>
+                            <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto;">Lecții Video, Kahoot, Documentație și Pregătire pentru Concursuri.</p>
+                            <br><button onclick="render('juridica')" style="padding: 12px 30px; background: #feca57; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">Start Lecții</button>
+                        </div>
+                        
+                        <div style="padding: 40px; text-align: left;">
+                            <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.5rem;"><i class="fas fa-info-circle"></i> Despre noi</h3>
+                            <p style="color: #555; line-height: 1.8; margin-bottom: 25px; font-size: 1.05rem;">
+                                Aici nu suntem doar la școală, ci învățăm cum funcționează lumea reală! Fie că vrei să afli care sunt drepturile și responsabilitățile tale, cum să te protejezi în mediul online, cum să gestionezi banii sau ce înseamnă cu adevărat să fii un cetățean implicat, ești exact unde trebuie! Ți-am pregătit lecții video captivante, teste Kahoot pentru a-ți verifica cunoștințele, dar și resurse complete pentru Olimpiada de Educație Socială și concursul național „Be legal! Be cool!”. Fii informat, fii responsabil, fii curajos!
+                            </p>
+                            
+                            <div style="background: #f8f9fa; border-left: 5px solid var(--accent); padding: 20px; border-radius: 10px; margin-top: 20px;">
+                                <p style="margin-bottom: 15px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-headphones-alt" style="font-size: 1.5rem; color: var(--accent);"></i> 
+                                    Ascultă mesajul de bun venit:
+                                </p>
+                                <audio controls style="width: 100%; outline: none; border-radius: 8px;">
+                                    <source src="prezentare.mp3" type="audio/mpeg">
+                                    Browser-ul tău nu suportă elementul audio.
+                                </audio>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="page-title" style="margin-bottom: 30px;">Timpul în lume</h2>
+                    <div class="clocks-container">
+                        <div class="clock-card" style="border-top: 5px solid var(--accent); transform: scale(1.05);">
+                            <h4 style="color: #333;"><i class="fas fa-map-marker-alt" style="color: var(--accent);"></i> București</h4>
+                            <div id="time-buc-t" class="clock-time">--:--:--</div>
+                            <div id="time-buc-d" class="clock-date">-- ---- ----</div>
+                        </div>
+                        <div class="clock-card" style="border-top: 5px solid #3498db;">
+                            <h4 style="color: #333;">Londra</h4>
+                            <div id="time-lon-t" class="clock-time">--:--:--</div>
+                            <div id="time-lon-d" class="clock-date">-- ---- ----</div>
+                        </div>
+                        <div class="clock-card" style="border-top: 5px solid #2ecc71;">
+                            <h4 style="color: #333;">New York</h4>
+                            <div id="time-ny-t" class="clock-time">--:--:--</div>
+                            <div id="time-ny-d" class="clock-date">-- ---- ----</div>
+                        </div>
+                        <div class="clock-card" style="border-top: 5px solid #e67e22;">
+                            <h4 style="color: #333;">Tokyo</h4>
+                            <div id="time-tok-t" class="clock-time">--:--:--</div>
+                            <div id="time-tok-d" class="clock-date">-- ---- ----</div>
+                        </div>
+                    </div>`;
+                updateClocks(); 
+                return;
+            }
+
+            if(pageId === 'docs') { renderDocsMain(); return; }
+            if(pageId === 'olimpiada') { renderOlimpiadaMain(); return; }
+            if(pageId === 'sociala') { renderSocialaMain(); return; }
+
+            if(pageId === 'galerie') {
+                app.innerHTML = `
+                    <h2 class="page-title">Galerie Foto Evenimente</h2>
+                    <div style="background: white; border-radius: 15px; padding: 40px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 40px;">
+                        <i class="fas fa-camera-retro" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--primary-dark); font-size: 1.8rem; margin-bottom: 15px;">Albumul Foto Oficial</h3>
+                        <p style="color: #555; margin-bottom: 30px; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                            Accesează arhiva noastră digitală pentru a vedea cele mai frumoase momente de la Olimpiada de Educație Socială și de la Concursul Național „Be legal! Be cool!”.
+                        </p>
+                        <a href="https://drive.google.com/drive/folders/10ykvYGKlhJrOiQpDqokaLAV38pRXG-8r?usp=drive_link" target="_blank" style="display: inline-block; padding: 15px 35px; background: var(--accent); color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);">
+                            <i class="fas fa-images"></i> Deschide Galeria Foto
+                        </a>
+                    </div>
+                    <div class="olympiad-grid" style="margin-top: 30px;">
+                        <div class="olympiad-card" style="cursor: default; padding: 30px; border-top: 5px solid var(--primary);">
+                            <i class="fas fa-users" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                            <h3 style="color: var(--text-dark); margin-bottom: 10px;">Olimpiada de Ed. Socială</h3>
+                            <p style="color: #7f8fa6; font-size: 0.95rem;">Poze de la etapele județene și naționale.</p>
+                        </div>
+                        <div class="olympiad-card" style="cursor: default; padding: 30px; border-top: 5px solid #2ecc71;">
+                            <i class="fas fa-balance-scale" style="font-size: 3rem; color: #2ecc71; margin-bottom: 15px;"></i>
+                            <h3 style="color: var(--text-dark); margin-bottom: 10px;">"Be legal! Be cool!"</h3>
+                            <p style="color: #7f8fa6; font-size: 0.95rem;">Momente din timpul concursului juridic.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            if(pageId === 'contact') {
+                app.innerHTML = `
+                    <h2 class="page-title">Contact</h2>
+                    <div class="contact-mega-box">
+                        <div class="contact-content">
+                            <h3 style="margin-bottom: 20px; color: var(--primary-dark); font-size: 1.5rem;">Informații de contact</h3>
+                            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 35px;">
+                                <a href="https://wa.me/40767363612" target="_blank" style="text-decoration: none; color: #2f3542; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 1.1rem; transition: 0.3s;">
+                                    <div style="width: 35px; height: 35px; background: #e8f9f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.2rem;"></i></div>
+                                    0767 363 612
+                                </a>
+                                <a href="mailto:ostroveanudaniel@gmail.com" style="text-decoration: none; color: #2f3542; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 1.1rem; transition: 0.3s;">
+                                    <div style="width: 35px; height: 35px; background: #fceceb; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-envelope" style="color: #ea4335; font-size: 1.1rem;"></i></div>
+                                    ostroveanudaniel@gmail.com
+                                </a>
+                                <div style="display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 1.1rem; color: #2f3542;">
+                                    <div style="width: 35px; height: 35px; background: #edeef9; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-map-marker-alt" style="color: #4e54c8; font-size: 1.2rem;"></i></div>
+                                    Loc. Băneasa, jud. Constanța, România
+                                </div>
+                            </div>
+                            <h3 style="margin-bottom: 15px; color: var(--primary-dark); font-size: 1.3rem;">Lasă-ne un mesaj</h3>
+                            <form onsubmit="alert('Mesajul a fost trimis!'); return false;">
+                                <div class="form-group"><label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block; color: #555;">Nume complet</label><input type="text" required></div>
+                                <div class="form-group"><label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block; color: #555;">Mesaj</label><textarea rows="4" required></textarea></div>
+                                <button type="submit" class="btn-send">Trimite Mesaj</button>
+                            </form>
+                        </div>
+                        <div style="background:#eee; position: relative;">
+                            <iframe style="width:100%; height:100%; min-height: 400px; border:0; position: absolute; top: 0; left: 0;" src="https://maps.google.com/maps?q=B%C4%83neasa,%20jud.%20Constan%C8%9Ba,%20Rom%C3%A2nia&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            // Pagina pentru "Educație juridică"
+            if(db[pageId]) {
+                const data = db[pageId];
+                let cards = '';
+                data.lessons.forEach(l => {
+                    let videoHtml = l.vid ? `<div class="video-container"><iframe src="${l.vid}" allow="autoplay" allowfullscreen></iframe></div>` : `<div class="no-video"><i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Video indisponibil momentan</p></div>`;
+                    let kahootBtn = l.k ? `<a href="${l.k}" target="_blank" class="btn-res btn-kahoot"><img src="https://assets-cdn.kahoot.it/builder/v2/favicon.ico" width="16"> Kahoot</a>` : `<button class="btn-res btn-disabled">Fără Kahoot</button>`;
+                    cards += `<div class="lesson-card">${videoHtml}<div class="lesson-content"><div class="lesson-title">${l.t}</div><div class="lesson-desc">${l.d}</div><div class="resources-row">${kahootBtn}</div></div></div>`;
+                });
+                app.innerHTML = `<h2 class="page-title">${data.title}</h2><div class="lessons-grid">${cards}</div>`;
+            }
+        }
+
+        // --- FUNCTII DOCUMENTATIE SI RECOMANDARI ---
+        function renderDocsMain() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <h2 class="page-title">Documentație și Resurse</h2>
+                <div class="olympiad-grid">
+                    <a href="https://drive.google.com/drive/folders/1kw8zZFEmIMjFhdf5wIoSVu3qLvZ5wEbJ?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                        <div class="oly-header" style="background: linear-gradient(45deg, #e74c3c, #c0392b);"><i class="fas fa-gavel" style="font-size:2.5rem;"></i><h3>Legislație</h3></div>
+                        <div style="padding:15px; color:#555;"><p>Acte normative și legi specifice educației.</p></div>
+                    </a>
+                    <a href="https://drive.google.com/drive/folders/1vj-hd62xAvurjyTl4CCeYi12Rz-DC_WS?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                        <div class="oly-header" style="background: linear-gradient(45deg, #2ecc71, #27ae60);"><i class="fas fa-calendar-alt" style="font-size:2.5rem;"></i><h3>Programe & Planificări</h3></div>
+                        <div style="padding:15px; color:#555;"><p>Programe școlare, planificări anuale și calendaristice.</p></div>
+                    </a>
+                    <a href="https://docs.google.com/document/d/1kPLoCz2RkfkKTOpUmJ-tFucAhZidLjPAFWwvLDekjRM/edit?tab=t.0" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                        <div class="oly-header" style="background: linear-gradient(45deg, #3498db, #2980b9);"><i class="fas fa-book" style="font-size:2.5rem;"></i><h3>Manuale Digitale</h3></div>
+                        <div style="padding:15px; color:#555;"><p>Linkuri către manualele digitale oficiale.</p></div>
+                    </a>
+                    <a href="https://drive.google.com/drive/folders/1zZyJCY5QvBkWNISr5Od7cshqZiD87H6r?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                        <div class="oly-header" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);"><i class="fas fa-clipboard-check" style="font-size:2.5rem;"></i><h3>Evaluare / Portofoliu</h3></div>
+                        <div style="padding:15px; color:#555;"><p>Criterii de evaluare și ghid pentru portofoliu.</p></div>
+                    </a>
+                    <a href="https://drive.google.com/drive/folders/1zRmR03t-mzZ-M7xzJzoJPcOztChfw_SJ?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                        <div class="oly-header" style="background: linear-gradient(45deg, #f1c40f, #f39c12);"><i class="fas fa-plus-circle" style="font-size:2.5rem;"></i><h3>Materiale Suplimentare</h3></div>
+                        <div style="padding:15px; color:#555;"><p>Resurse extra pentru aprofundarea lecțiilor.</p></div>
+                    </a>
+                    
+                    <div class="olympiad-card" onclick="renderRecomandari()" style="border-top: 5px solid #e84393;">
+                        <div class="oly-header" style="background: linear-gradient(45deg, #e84393, #fd79a8);"><i class="fas fa-film" style="font-size:2.5rem;"></i><h3>Recomandări Cărți & Filme</h3></div>
+                        <div style="padding:15px; color:#555;"><p>Selecție de lecturi și filme educative pe vârste (RO & Internațional).</p></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRecomandari() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div onclick="renderDocsMain()" class="back-btn"><i class="fas fa-arrow-left"></i> Înapoi la Documentație</div>
+                <h2 class="page-title">Recomandări de Lectură și Filme</h2>
+                
+                <div class="subpage-nav">
+                    <button class="subpage-btn active" onclick="showRecTab(this, 'cat1')">11-12 ani (V-VI)</button>
+                    <button class="subpage-btn" onclick="showRecTab(this, 'cat2')">13-14 ani (VII-VIII)</button>
+                    <button class="subpage-btn" onclick="showRecTab(this, 'cat3')">15-18 ani (Liceu)</button>
+                </div>
+                
+                <div id="rec-content" class="rec-container"></div>
+            `;
+            showRecTab(document.querySelector('.subpage-nav .subpage-btn'), 'cat1');
+        }
+
+        function showRecTab(btn, cat) {
+            document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            let content = '';
+            
+            if(cat === 'cat1') {
+                content = `
+                    <div class="rec-category">
+                        <h4><i class="fas fa-book-open" style="color: var(--primary);"></i> Cărți Recomandate (Clasele V-VI)</h4>
+                        <ul class="rec-list">
+                            <li><span class="rec-title">Inocenții</span> - <span class="rec-author">Ioana Pârvulescu</span>
+                                <span class="rec-desc">O carte superbă despre copilărie, descoperirea lumii și a regulilor sociale în România comunistă.</span></li>
+                            <li><span class="rec-title">Minunea (Wonder)</span> - <span class="rec-author">R.J. Palacio</span>
+                                <span class="rec-desc">O lectură esențială despre empatie, acceptarea diferențelor și combaterea bullying-ului.</span></li>
+                            <li><span class="rec-title">Matilda</span> - <span class="rec-author">Roald Dahl</span>
+                                <span class="rec-desc">O poveste despre importanța educației și curajul de a te opune nedreptăților adulților.</span></li>
+                            <li><span class="rec-title">Banii pe înțelesul copiilor</span> - <span class="rec-author">Ligia Goloșoiu</span>
+                                <span class="rec-desc">Inițiere prietenoasă în educația financiară, susținută de BNR.</span>
+                                <a href="https://www.bnr.ro/Proiecte-educationale-7264-Mobile.aspx" target="_blank" class="btn-download-sm"><i class="fas fa-external-link-alt"></i> Vezi resurse BNR</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="rec-category">
+                        <h4><i class="fas fa-film" style="color: var(--accent);"></i> Filme și Animații</h4>
+                        <ul class="rec-list">
+                            <li><span class="rec-title">Străjerii (2018)</span> - Film românesc de aventuri, perfect pentru a discuta despre munca în echipă și rezolvarea conflictelor.</li>
+                            <li><span class="rec-title">Zootopia (2016)</span> - Cum funcționează legile și poliția, și de ce sunt periculoase prejudecățile.</li>
+                            <li><span class="rec-title">Inside Out (Întors pe dos - 2015)</span> - Educație emoțională și înțelegerea propriilor reacții.</li>
+                            <li><span class="rec-title">Amintiri din copilărie (1964)</span> - Excelent pentru o dezbatere despre cum s-au schimbat drepturile și pedepsele elevilor în timp.</li>
+                        </ul>
+                    </div>
+                `;
+            } 
+            else if(cat === 'cat2') {
+                content = `
+                    <div class="rec-category">
+                        <h4><i class="fas fa-book-open" style="color: var(--primary);"></i> Cărți și Ghiduri (Clasele VII-VIII)</h4>
+                        <ul class="rec-list">
+                            <li><span class="rec-title">Elevul și Legea</span> - <span class="rec-author">Asociația VeDem Just</span>
+                                <span class="rec-desc">Ghidul complet al drepturilor și obligațiilor tinerilor din România (răspundere penală, bullying, siguranță).</span>
+                                <a href="https://vedemjust.ro/elevul-si-legea/" target="_blank" class="btn-download-sm"><i class="fas fa-download"></i> Descarcă Gratuit PDF</a>
+                            </li>
+                            <li><span class="rec-title">O scurtă istorie povestită celor tineri</span> - <span class="rec-author">Neagu Djuvara</span>
+                                <span class="rec-desc">Cea mai captivantă formă de a înțelege cum s-a format statul român și instituțiile noastre.</span></li>
+                            <li><span class="rec-title">Ferma Animalelor</span> - <span class="rec-author">George Orwell</span>
+                                <span class="rec-desc">Cea mai bună fabulă pentru a înțelege diferența dintre democrație și dictatură.</span></li>
+                        </ul>
+                    </div>
+                    <div class="rec-category">
+                        <h4><i class="fas fa-film" style="color: var(--accent);"></i> Filme Recomandate</h4>
+                        <ul class="rec-list">
+                            <li><span class="rec-title">Coborâm la prima (2018)</span> - Film românesc despre toleranță și diversitate socială.</li>
+                            <li><span class="rec-title">Băiatul care a îmblânzit vântul (2019)</span> - Despre dreptul la educație, sărăcie și inovație.</li>
+                            <li><span class="rec-title">Lorax (2012)</span> - Responsabilitatea față de mediu și practicile afacerilor.</li>
+                            <li><span class="rec-title">Enola Holmes (2020)</span> - Drepturile civile, emanciparea femeii și reforma societății.</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            else if(cat === 'cat3') {
+                content = `
+                    <div class="rec-category">
+                        <h4><i class="fas fa-book-open" style="color: var(--primary);"></i> Cărți Recomandate (Liceu)</h4>
+                        <ul class="rec-list">
+                            <li><span class="rec-title">Jurnalul fericirii</span> - <span class="rec-author">Nicolae Steinhardt</span>
+                                <span class="rec-desc">Despre ce se întâmplă când statul anulează drepturile fundamentale și libertatea de exprimare.</span></li>
+                            <li><span class="rec-title">Să ucizi o pasăre cântătoare</span> - <span class="rec-author">Harper Lee</span>
+                                <span class="rec-desc">O capodoperă absolută despre sistemul judiciar, prezumția de nevinovăție și rasism.</span></li>
+                            <li><span class="rec-title">1984</span> - <span class="rec-author">George Orwell</span>
+                                <span class="rec-desc">Lectură vitală despre manipularea adevărului (fake news) și viața intimă vs. supravegherea în masă.</span></li>
+                            <li><span class="rec-title">Tată bogat, tată sărac</span> - <span class="rec-author">Robert Kiyosaki</span>
+                                <span class="rec-desc">O carte clasică pentru educația financiară a tinerilor, active vs. pasive.</span></li>
+                        </ul>
+                    </div>
+                    <div class="rec-category">
+                        <h4><i class="fas fa-film" style="color: var(--accent);"></i> Filme și Documentare</h4>
+                        <ul class="rec-list">
+                            <li><span class="rec-title">De ce eu? (2015)</span> - Cel mai bun film românesc de educație juridică. Despre integritate, presiuni politice și sistemul penal.</li>
+                            <li><span class="rec-title">Colectiv (2019)</span> - Documentar despre rolul jurnalismului de investigație într-o democrație și dreptul la sănătate.</li>
+                            <li><span class="rec-title">12 Oameni Furioși (1957)</span> - Demonstrează cum funcționează raționamentul logic, dovezile și „îndoiala rezonabilă” într-un proces.</li>
+                            <li><span class="rec-title">Dilema Socială (The Social Dilemma - Netflix)</span> - Documentar obligatoriu despre siguranța datelor, cyberbullying și manipularea prin algoritmi.</li>
+                            <li><span class="rec-title">Un pas în urma serafimilor (2017)</span> - Dezbate abuzul de putere, moralitatea și curajul de a expune un sistem corupt.</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('rec-content').innerHTML = content;
+        }
+
+        // --- FUNCTII CLASE ---
+        const renderSocialaMain = () => {
+             const app = document.getElementById('app');
+             app.innerHTML = `<h2 class="page-title">Educație Socială</h2><div class="subpage-nav"><button class="subpage-btn active" onclick="showSocialaTab(this, 'clasa5')">Gândire critică și drepturile copilului</button><button class="subpage-btn" onclick="showSocialaTab(this, 'clasa6')">Educație interculturală</button><button class="subpage-btn" onclick="showSocialaTab(this, 'clasa7')">Educație pentru cetățenie democratică</button><button class="subpage-btn" onclick="showSocialaTab(this, 'clasa8')">Educație economico-financiară</button></div><div id="sociala-content" style="margin-top: 20px;"></div>`;
+             showSocialaTab(document.querySelector('.subpage-nav .subpage-btn'), 'clasa5');
+        }
+
+        function showSocialaTab(btn, classId) {
+            document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const data = db[classId]; let cards = '';
+            data.lessons.forEach(l => {
+                let videoHtml = l.vid ? `<div class="video-container"><iframe src="${l.vid}" allow="autoplay" allowfullscreen></iframe></div>` : `<div class="no-video"><i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Lecție în lucru</p></div>`;
+                let kahootBtn = l.k ? `<a href="${l.k}" target="_blank" class="btn-res btn-kahoot"><img src="https://assets-cdn.kahoot.it/builder/v2/favicon.ico" width="16"> Kahoot</a>` : `<button class="btn-res btn-disabled">Fără Kahoot</button>`;
+                cards += `<div class="lesson-card">${videoHtml}<div class="lesson-content"><div class="lesson-title">${l.t}</div><div class="lesson-desc">${l.d}</div><div class="resources-row">${kahootBtn}</div></div></div>`;
+            });
+            document.getElementById('sociala-content').innerHTML = `<div class="lessons-grid">${cards}</div>`;
+        }
+
+        const renderOlimpiadaMain = () => {
+             document.getElementById('app').innerHTML = `<h2 class="page-title">Competiții Școlare</h2><div class="olympiad-grid"><div class="olympiad-card" onclick="renderOliDetails('sociala')"><div class="oly-header" style="background: linear-gradient(45deg, #ff9f43, #ff6b6b);"><i class="fas fa-users" style="font-size:3rem;"></i><br><h3>Olimpiada Ed. Socială</h3></div><div style="padding:20px;"><p>Click pentru a vedea subiectele și baremele</p></div></div><div class="olympiad-card" onclick="renderOliDetails('juridica')"><div class="oly-header" style="background: linear-gradient(45deg, #5f27cd, #341f97);"><i class="fas fa-balance-scale" style="font-size:3rem;"></i><br><h3>Concurs Juridic</h3></div><div style="padding:20px;"><p>Click pentru detalii</p></div></div></div>`;
+        }
+
+        function renderOliDetails(type) {
+            const app = document.getElementById('app');
+            let title = type === 'sociala' ? 'Olimpiada de Educație Socială' : 'Concursul Be Legal!';
+            if(type === 'sociala') {
+                app.innerHTML = `<div onclick="renderOlimpiadaMain()" class="back-btn"><i class="fas fa-arrow-left"></i> Înapoi</div><h2 class="page-title">${title}</h2><div class="subpage-nav"><button class="subpage-btn active" onclick="showTab(this, 'judet')">Etapa Județeană</button><button class="subpage-btn" onclick="showTab(this, 'nationala')">Etapa Națională</button></div><div id="tab-content" style="background:white; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);"></div>`;
+                showTab(document.querySelector('.subpage-btn.active'), 'judet');
+            } else {
+                 app.innerHTML = `<div onclick="renderOlimpiadaMain()" class="back-btn"><i class="fas fa-arrow-left"></i> Înapoi</div><h2 class="page-title">${title}</h2><div style="background:white; padding:30px; border-radius:15px; text-align:center;"><p>Informațiile pentru concursul juridic vor fi disponibile în curând.</p></div>`;
+            }
+        }
+
+        function showTab(btn, tab) {
+            document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            let content = '';
+            if(tab === 'judet') {
+                content = `
+                    <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="#" onclick="alert('Regulamentul va fi publicat în curând.'); return false;" class="btn-doc btn-doc-important"><i class="fas fa-info-circle"></i> Informații și Regulament</a>
+                        <a href="https://docs.google.com/document/d/1d3aWhRZ_SUjnOLoAaexeg-xrk6Ex7lWC/view" target="_blank" class="btn-doc" style="background: #17c0eb; color: white; border: none;"><i class="fas fa-book-open"></i> Subiecte posibile județeană</a>
+                    </div>
+                    
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2025</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1wn1rABRRasIijW0FKtNxrbMjWkKBOiEC/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                            <a href="https://drive.google.com/file/d/18MHLfw7a182tIFbF_az4zBbVXOHj0rQQ/view" target="_blank" class="btn-doc"><i class="fas fa-check-circle"></i> Barem</a>
+                            <a href="https://docs.google.com/document/d/1vbCSZTZjaYzL3LQDfFmhdWGh8DZwsIsF/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V1</a>
+                            <a href="https://docs.google.com/document/d/1LsVTCYJeKkZAWnFiJHNAraQh9_On_7rD/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V2</a>
+                        </div>
+                    </div>
+
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2024</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1YgaCYg_S-uYtolbHre3lBD3rnC27pFn4/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                            <a href="https://drive.google.com/file/d/1Cjv46nELyKH-HeIxoF9LAE9FNQutdG93/view" target="_blank" class="btn-doc"><i class="fas fa-check-circle"></i> Barem</a>
+                            <a href="https://docs.google.com/document/d/1k42Z5i_s4Vwl6GadqmXX5LU7HF-prMKk/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V1</a>
+                            <a href="https://docs.google.com/document/d/1brMlr4ABz1GhXi3z0Kr9i3nlKa8ygKum/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V2</a>
+                        </div>
+                    </div>
+
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2023</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1xdQtU3u2MmTRaRgF5zzrX2_dB-pPt9Lb/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                            <a href="https://drive.google.com/file/d/1rQmP-hmpSSepbtiJnnqDBiKU7y_7PTf9/view" target="_blank" class="btn-doc"><i class="fas fa-check-circle"></i> Barem</a>
+                            <a href="https://docs.google.com/document/d/1k42Z5i_s4Vwl6GadqmXX5LU7HF-prMKk/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V1</a>
+                            <a href="https://docs.google.com/document/d/1brMlr4ABz1GhXi3z0Kr9i3nlKa8ygKum/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V2</a>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if(tab === 'nationala') {
+                content = `
+                    <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="#" onclick="alert('Regulamentul va fi publicat în curând.'); return false;" class="btn-doc btn-doc-important"><i class="fas fa-info-circle"></i> Informații și Regulament</a>
+                        <a href="https://docs.google.com/document/d/1h3OoxUpM9ITtXe9IzWiZyK4feYeIu0c5/view" target="_blank" class="btn-doc" style="background: #17c0eb; color: white; border: none;"><i class="fas fa-book-open"></i> Subiecte posibile națională</a>
+                    </div>
+
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2025</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1vaqxK0odQba2WBrUQ1XPNu_wRiYGwY11/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                            <a href="https://drive.google.com/file/d/1-6snoAcKtZ6047xApgJch2T6_hMDFTx1/view" target="_blank" class="btn-doc"><i class="fas fa-check-circle"></i> Barem</a>
+                            <a href="https://docs.google.com/document/d/1uUoAuyiQnQGKfyPiID6Z1L02So7xiXfq/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V1</a>
+                            <a href="https://docs.google.com/document/d/1cFW-k9SYci36LQ__hFHbCIbDMGJpERMH/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V2</a>
+                        </div>
+                    </div>
+
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2024</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1PbYMcU9UBERuHZwUrh_1PgrzF9NK9YI8/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                            <a href="https://drive.google.com/file/d/13EMUKCDH5LCltxQXMTygOp71_Ed4dXzY/view" target="_blank" class="btn-doc"><i class="fas fa-check-circle"></i> Barem</a>
+                            <a href="https://docs.google.com/document/d/1PZRn0J7EkFmWmYhELcl5aDuXKyxWqbMJ/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V1</a>
+                            <a href="https://docs.google.com/document/d/1gbeCGXvPbD6RJ8Qt_LWXIE6NI_w5eLrb/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V2</a>
+                        </div>
+                    </div>
+
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2023</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1SaXxMoNzWZv6AzicIPJs8q643cUwGIFq/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                            <a href="https://drive.google.com/file/d/17KDpUfGCV_z2vCDQ8u5wpvIKWaj-_1tB/view" target="_blank" class="btn-doc"><i class="fas fa-check-circle"></i> Barem</a>
+                            <a href="https://docs.google.com/document/d/1cJYV4cE3g0GJnCWFbRRrDfAT-rbwj2rH/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V1</a>
+                            <a href="https://docs.google.com/document/d/19WMabXDf8JjC_K1-dGtcQ_4OmTqDfeA4/view" target="_blank" class="btn-doc"><i class="fas fa-lightbulb"></i> Rezolvare V2</a>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('tab-content').innerHTML = content;
+        }
+
+        // Inițializăm afișarea paginii principale
+        render('acasa');
+    </script>
+
+    <script type="module">
+        // Importăm modulele direct de pe serverele Google
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // CHEILE TALE NOI (Actualizate)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCr_KsoWdDQP3FFIue3lzyJ9h_FJcbRMvc",
+            authDomain: "platforma-elevilor.firebaseapp.com",
+            projectId: "platforma-elevilor",
+            storageBucket: "platforma-elevilor.firebasestorage.app",
+            messagingSenderId: "443060352247",
+            appId: "1:443060352247:web:ae91ac69dabedc45fccff2",
+            measurementId: "G-XG338DLCGE"
+        };
+
+        // Activăm Firebase în aplicația ta
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const dbFirestore = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // Căutăm butoanele în pagină
+        const btnLogin = document.getElementById('btn-login-google');
+        const btnLogout = document.getElementById('btn-logout-google');
+        const userProfileInfo = document.getElementById('user-profile-info');
+        const userAvatar = document.getElementById('user-avatar');
+        const userDisplayName = document.getElementById('user-display-name');
+
+        // Funcția de CONECTARE
+        btnLogin.addEventListener('click', async () => {
+            try { 
+                await signInWithPopup(auth, provider); 
+            } catch (error) { 
+                console.error("Eroare la logare:", error); 
+                alert("Nu te-ai putut loga. Verifică pop-up-urile sau conexiunea la internet."); 
+            }
+        });
+
+        // Funcția de DECONECTARE
+        btnLogout.addEventListener('click', async () => {
+            try { 
+                await signOut(auth); 
+            } catch (error) { 
+                console.error("Eroare la delogare:", error); 
+            }
+        });
+
+        // Verifică în permanență dacă ești logat sau delogat
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Dacă te-ai logat, ascunde butonul de logare și arată poza
+                btnLogin.style.display = 'none';
+                userProfileInfo.style.display = 'flex';
+                userDisplayName.textContent = user.displayName;
+                userAvatar.src = user.photoURL;
+                console.log("Utilizator logat cu succes:", user.email);
+            } else {
+                // Dacă ești delogat, arată doar butonul de Conectare
+                btnLogin.style.display = 'flex';
+                userProfileInfo.style.display = 'none';
+                userDisplayName.textContent = '';
+                userAvatar.src = '';
+                console.log("Niciun utilizator nu este logat.");
+            }
+        });
+    </script>
+</body>
+</html>
