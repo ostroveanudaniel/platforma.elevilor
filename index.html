@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platforma Educație Socială & Juridică</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- STILURI GENERALE --- */
+        :root {
+            --primary: #4e54c8;
+            --primary-dark: #3c40c6;
+            --accent: #ff4757;
+            --bg-color: #f1f2f6;
+            --text-dark: #2f3542;
+            --kahoot-color: #46178f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* NAVIGARE */
+        nav { background: var(--primary); padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
+        .nav-links { list-style: none; display: flex; gap: 5px; overflow-x: auto; align-items: center; justify-content: flex-start; flex-wrap: wrap; }
+        .nav-links::-webkit-scrollbar { height: 0; }
+        .nav-links li a { display: block; color: rgba(255, 255, 255, 0.85); text-decoration: none; padding: 18px 15px; font-weight: 500; font-size: 0.95rem; border-bottom: 4px solid transparent; transition: 0.3s; white-space: nowrap; }
+        .nav-links li a:hover, .nav-links li a.active { color: white; background: rgba(255,255,255,0.1); border-bottom-color: var(--accent); }
+        .menu-toggle { display: none; padding: 15px; color: white; font-size: 1.5rem; cursor: pointer; background: var(--primary-dark); text-align: center; }
+
+        /* BUTON LOGARE */
+        .auth-container { margin-left: auto; display: flex; align-items: center; padding-right: 15px; }
+        .btn-login { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: 20px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3); }
+        .btn-login:hover { background: #ff3344; transform: translateY(-2px); }
+        
+        .user-profile { display: none; align-items: center; gap: 12px; color: white; }
+        .user-pic { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+        .user-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+        /* CONȚINUT */
+        main { flex: 1; padding: 40px 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        h2.page-title { text-align: center; font-size: 2rem; color: var(--primary-dark); margin-bottom: 40px; position: relative; padding-bottom: 15px; font-weight: 700; }
+        h2.page-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 5px; background: var(--accent); border-radius: 5px; }
+
+        /* CARDURI LECȚII */
+        .lessons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px; }
+        .lesson-card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+        .lesson-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); border-color: var(--primary); }
+
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-bottom: 1px solid #eee; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .no-video { height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #b2bec3; flex-direction: column; text-align: center; padding: 20px; border-bottom: 1px solid #eee; }
+
+        .lesson-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .lesson-title { font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 10px; font-weight: 700; }
+        .lesson-desc { font-size: 0.9rem; color: #555; margin-bottom: 15px; line-height: 1.5; flex-grow: 1; }
+
+        .resources-row { display: flex; gap: 10px; margin-top: auto; }
+        .btn-res { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 10px; border-radius: 6px; text-decoration: none; color: white; font-size: 0.85rem; font-weight: 600; transition: 0.2s; cursor: pointer; border: none; }
+        .btn-kahoot { background: var(--kahoot-color); }
+        .btn-kahoot:hover { opacity: 0.9; }
+        .btn-disabled { background: #dcdde1; color: #7f8fa6; cursor: not-allowed; }
+
+        /* ALTE PAGINI */
+        .contact-mega-box { background: white; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-top: 8px solid var(--accent); overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; }
+        .contact-content { padding: 40px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+        .btn-send { width: 100%; padding: 12px; background: var(--accent); color: white; font-weight: bold; border:none; border-radius:8px; cursor:pointer;}
+        
+        .olympiad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .olympiad-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; text-align: center; padding-bottom: 20px; transition: 0.3s;}
+        .olympiad-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .oly-header { padding: 30px; color: white; margin-bottom: 15px; }
+        .oly-header h3 { margin-top: 10px; font-size: 1.3rem; }
+        
+        .subpage-nav { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .subpage-btn { padding: 8px 20px; border: 2px solid var(--primary); border-radius: 20px; background: white; color: var(--primary); font-weight:600; cursor: pointer; transition: 0.3s;}
+        .subpage-btn:hover { background: #f1f2f6; }
+        .subpage-btn.active { background: var(--primary); color: white; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #666; cursor: pointer; font-weight: 600; }
+
+        .oly-year-card { background: #f8f9fa; border-left: 5px solid var(--accent); padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .oly-year-card h4 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .doc-links-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .btn-doc { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: white; border: 1px solid #ccc; color: var(--text-dark); border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .btn-doc:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px);}
+        .btn-doc-important { background: var(--accent); color: white; border-color: var(--accent); }
+        .btn-doc-important:hover { background: #ff3344; }
+
+        /* Stiluri Recomandări */
+        .rec-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: left; }
+        .rec-category { margin-bottom: 35px; }
+        .rec-category h4 { color: var(--primary-dark); font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .rec-list { list-style: none; padding: 0; }
+        .rec-list li { margin-bottom: 20px; padding-left: 25px; position: relative; line-height: 1.6; }
+        .rec-list li::before { content: '👉'; position: absolute; left: 0; top: 2px; }
+        .rec-title { font-weight: 700; color: #333; font-size: 1.05rem; }
+        .rec-author { font-style: italic; color: var(--accent); font-weight: 600; }
+        .rec-desc { color: #555; font-size: 0.95rem; display: block; margin-top: 5px; }
+        .btn-download-sm { display: inline-flex; align-items: center; gap: 6px; padding: 6px 15px; background: #2ecc71; color: white; border-radius: 20px; text-decoration: none; font-size: 0.85rem; font-weight: bold; margin-top: 8px; transition: 0.3s; box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4); }
+        .btn-download-sm:hover { background: #27ae60; transform: translateY(-2px); }
+
+        /* Ceasuri globale */
+        .clocks-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: center; margin-top: 10px; }
+        .clock-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .clock-time { font-size: 2rem; font-weight: 700; color: var(--primary-dark); margin: 5px 0; font-variant-numeric: tabular-nums;}
+        .clock-date { font-size: 0.9rem; color: #7f8fa6; font-weight: 500; }
+
+        footer { background: #2d3436; color: #b2bec3; text-align: center; padding: 30px; margin-top: auto; }
+
+        @media (max-width: 768px) {
+            nav { display: none; width: 100%; } 
+            nav.active { display: block; }
+            .nav-links { flex-direction: column; padding: 10px 0; align-items: stretch;} 
+            .auth-container { margin: 10px auto; padding: 0; justify-content: center; }
+            .menu-toggle { display: block; }
+            .contact-mega-box { grid-template-columns: 1fr; }
+            .doc-links-container { flex-direction: column; }
+            .btn-doc { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-toggle" onclick="document.querySelector('nav').classList.toggle('active')">
+        <i class="fas fa-bars"></i> Meniu Navigare
+    </div>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="#" onclick="render('acasa')" class="active">Acasă</a></li>
+            <li><a href="#" onclick="render('sociala')">Ed. socială</a></li>
+            <li><a href="#" onclick="render('juridica')" style="color: #ffda79;">Ed. juridică</a></li>
+            <li><a href="#" onclick="render('olimpiada')">Olimpiadă</a></li>
+            <li><a href="#" onclick="render('docs')">Documentație</a></li>
+            <li><a href="#" onclick="render('galerie')">Galerie Foto</a></li>
+            <li><a href="#" onclick="render('contact')">Contact</a></li>
+            
+            <li class="auth-container">
+                <button id="btn-login-google" class="btn-login">
+                    <i class="fab fa-google"></i> Conectare
+                </button>
+                <div id="user-profile-info" class="user-profile">
+                    <img id="user-avatar" class="user-pic" src="" alt="Avatar">
+                    <span id="user-display-name" class="user-name"></span>
+                    <button id="btn-logout-google" class="btn-logout">Ieșire</button>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <main id="app"></main>
+
+    <footer><p>© 2026 Platforma educațională națională.</p></footer>
+
+    <script>
+        // --- BAZA DE DATE COMPLETA ---
+        const db = {
+    cls5: [
+        {
+            titlu: "U1L1 - Dreptul la informare. Ne mirăm! Ne întrebăm!",
+            pdf: "https://drive.google.com/file/d/1vK0nDNlVPWe-KMaDyrEkOZbSdZOpvc40/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1sdx373eKs9s6xy92amCdQrHFa6UaXYCF/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1qlJO4yjtFPYmsfqAmkkzqdn6ia9AQ4Da/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1tKe7FYnVlplBkTEvd3YVk3xc1TD6iP74/view?usp=drive_link",
+            interactiv: "https://wordwall.net/ro/resource/110328170",
+            interactivTip: "Wordwall"
+        },
+        {
+            titlu: "U1L2 - Ne informăm responsabil. Pe cine și cum întrebăm",
+            pdf: "https://drive.google.com/file/d/163H6pn1XDSSFVrGbfCB76MBEw-dBDZGm/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/19Dqi5z70qHtxGhd545DHd1HrgPz2XTKh/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1XeqSRALFdCNfWFsCxHRqDII8HAsCBaCf/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1Uhr-4rNCDLDWx2PyHrot7hWQcyjt_9mb/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/ne-informam-responsabil-pe-cine-si-cum-intrebam/1b84d910-4741-413e-a8a3-ca941ebdf8a9",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U1L3 - Recapitulare U1. Dreptul la informare. Formularea de întrebări",
+            pdf: "https://drive.google.com/file/d/1ObLiAHTfL8HBgltBOlbVN9cgp30zO5dx/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/15dSdzCGr6XhsZLPEo-wtoqvhW7CkJtHz/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1Kh__kbX6z4sNDNQTUZRr_o9s_CouWNYJ/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1fw5c1bz2LEDrBkqY7ERmUQ0zGg562263/view?usp=drive_link",
+            interactiv: "https://wayground.com/embed/quiz/69c91e818b8beed1407d60ed",
+            interactivTip: "Wayground"
+        },
+        {
+            titlu: "U2L1 - Fapte și opinii",
+            pdf: "https://drive.google.com/file/d/1K_mqNwpV6Z-bJvOfPlVyYRoe4nCk9nOB/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1MEuHtKY6WhI6P4DAoeoi3u6R41U8j2Qs/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1TGfh_sqsLPgFKCYMp8YozcxQGxd0a9P3/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1Rcm-tYFwgmEXq9yv_WvVuXgHwhn6PdpP/view?usp=drive_link",
+            interactiv: "https://wordwall.net/ro/resource/110331050",
+            interactivTip: "Wordwall"
+        },
+        {
+            titlu: "U2L2 - Copiii au dreptul la opinie! Schimbăm, comparăm, respectăm opinii diferite!",
+            pdf: "https://drive.google.com/file/d/14dMR4k6Y7YZbkMIZBnUvo7VrCnlVloMh/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1OQmZHfX1dtjw417xQxiWhDvk9NXWxMIe/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1YEdc95gF7KZkJEw5S9__3uod42OIJ9I3/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/13zXJJRy4hFX7lGv-q5z8h5gRT1vNaXZ0/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/copiii-au-dreptul-la-opinie-schimbam-comparam-respectam-opinii-diferite/68c0c52c-aab7-4619-922e-64377e58ea13",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U2L3 - Cum ne formulăm opiniile",
+            pdf: "https://drive.google.com/file/d/1fMYZm1Y6LBArxVO-nHr5cOnuQ4NwHVtq/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1IM63v7Nbb5LqBq8bNpCSA53dTN68Y62m/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1vUZRXNAjeDIzHSdAh2tuJFRTXynf4D3O/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1045u9lVGhO1tycZujDSLFrdSrsqgqn8M/view?usp=drive_link",
+            interactiv: "https://wayground.com/embed/quiz/69c92c2ef651329c18e27227",
+            interactivTip: "Wayground"
+        },
+        {
+            titlu: "U2L4 - Susținem opinii, cântărim argumente. Condiții de acceptare a unui argument",
+            pdf: "https://drive.google.com/file/d/13AjDL5uTmFWS57bhGOnvYgLtt7Aw7yja/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1RryJsDr1MiykXvJG6TWE2jGrGH153o_S/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1u38OCD5i407Nb8zxWMJ9Z0pYVb9l1dGO/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/17W3ybPFw-WnO9brKVjzq26zDHZLgxc1Z/view?usp=drive_link",
+            interactiv: "https://dashboard.blooket.com/set/69cbede97e56d60b248a152a",
+            interactivTip: "Blooket"
+        },
+        {
+            titlu: "U2L5 - Fii liber! Fără prejudecăți! Fără discriminare!",
+            pdf: "https://drive.google.com/file/d/12x0k3ln-1UB9G8glzHJYwVcJ7tAQUwUJ/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1kAsT2hqeYjJg4yqOp-dV37sXZKxlhNW6/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/132cxHKyKWj1Sd4BuPXHpksuaxDcw88QI/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1xWqIQfxPdnFo55vDF_knqRAcFqKpNMaz/view?usp=drive_link",
+            interactiv: "https://dashboard.blooket.com/set/69cbf60e7e56d60b248a18b5",
+            interactivTip: "Blooket"
+        },
+        {
+            titlu: "U2L6 - Recapitulare U2. Argumentarea unui punct de vedere personal",
+            pdf: "https://drive.google.com/file/d/1wT-6TJstNglgQ0uUh-bmqlVxyFJi4Sz7/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1lwKik2gvD5Zf5jpkRkjB_oDb3eS1nMBV/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1KMRiCCdq9Un_4hT1R_LfUYcoNjFjpGqK/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1IvOWgBr3fOcuqXcsfMC2PKMYBmtuuH-S/view?usp=drive_link",
+            interactiv: "https://www.educaplay.com/learning-resources/28492251-recapitulare_u2_argumentarea_unui_punct_de_vedere_personal.html",
+            interactivTip: "Educaplay"
+        },
+        {
+            titlu: "U3L1 - De ce avem nevoie de drepturi pentru copii. Convenția ONU cu privire la drepturile copilului",
+            pdf: "https://drive.google.com/file/d/1BITnElA8oyfl_EsLiAVXc0LdniLepfZt/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1EBN56vCbOUkK7B4WI1x_YANyNpczt6aI/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1Jo7i8PibUOvLtkcslkG8or_I49pT2ls6/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1NBC4PvIsDzRkA6ZPU9mUX1md8bGowceM/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/de-ce-avem-nevoie-de-drepturi-pentru-copii-conventia-onu-cu-privire-la-drepturile-copilului/aff02c2e-5ffc-43ca-8428-016bbf1030ff",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U3L2 - Cine sunt eu. Dreptul la identitate",
+            pdf: "https://drive.google.com/file/d/1x-Vy30fadSduuiU4W6gTT485eenNmnP9/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1GNyY7DqBsDLebjFYN74gP10vml0B3PJe/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1MWdm-_bFRU8ndSWrnFWd0nIukStf-Qfh/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1qWXVlrDeVO39Vx0f4zXGT4bIpG3HJTXj/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/cine-sunt-eu-dreptul-la-identitate/56b0101e-ead1-4fb6-b3f2-3e8bfb58c746",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U3L3 - Am drepturi și responsabilități în familie. Dreptul la familie",
+            pdf: "https://drive.google.com/file/d/1f18QzhKqExb8_T942K2svW1uprnA48sI/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1RNelS_LrtHpy0h49wwifsOG-UEInrEud/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1u1v9bagyKzJHU9aPx3dt4QTyQcFxGu3F/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1AneqIXHDwtWlDovN7Vnq0f5oJkrcXbB7/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/cine-sunt-eu-dreptul-la-identitate/56b0101e-ead1-4fb6-b3f2-3e8bfb58c746",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U3L4 - Dreptul la educație",
+            pdf: "https://drive.google.com/file/d/1p5OGyqkIbfGYUxP4HAsFmBJACOXEWcWp/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1kMy5rRUCeftjmkZ_okYK0Ijee8oyChqQ/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1fjHgbKyPN_atAh03N3x23s2YBknWijW_/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1QeCvSPT1fhEtoCHO47yX44sXMwPdJjWv/view?usp=drive_link",
+            interactiv: "https://dashboard.blooket.com/set/69cd0b49d40cb4b1c051d8cd",
+            interactivTip: "Blooket"
+        },
+        {
+            titlu: "U3L5 - Dreptul la joc și activități recreative",
+            pdf: "https://drive.google.com/file/d/171-hZHu613SNHncoiExF17LbF4QCZ7Em/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/15vGojAwLCn3AD3UODU3Or-QghNQzCuDt/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1juBU6cfCXZDeX3XcH0grjwOFrm5fIB6z/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/13XCAj00FyYQhIFfFWbePYt0XeefNx-SF/view?usp=drive_link",
+            interactiv: "https://www.educaplay.com/learning-resources/28500698-joac_drepturi_i_responsabilit_i.html",
+            interactivTip: "Educaplay"
+        },
+        {
+            titlu: "U3L6 - Dreptul la securitate și protecție socială",
+            pdf: "https://drive.google.com/file/d/11Khaiu4c_a52Nu5L0FufHzrQbkNc1oNW/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1X3LiXGgDdsb0LZKH81sp9vNmXZDeHxCL/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1kUTz7Lrp0aJPdc4Qct69l3o-b8DWHzOi/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1fysyoS2WXzz4QeZQXAdDFemcTpT1Grqs/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/dreptul-la-securitate-si-protectie-sociala/9aebf63c-7519-4483-85db-f38e2730bc3a",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U3L7 - Nu violenței! Dreptul la protecție împotriva violenței, abuzului și exploatării",
+            pdf: "https://drive.google.com/file/d/1UYHMBsZmL7Wh8bEyjgEwrHAMyLBlJLrf/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1gZHKcT7sZKSuNjv93tZZI6U0sAVm8K6u/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1yO5UqHzVMCRJOacJaE56TnAkdlb6w8PD/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1XGnKjyAVNQk9C4wafuqFbqPWXETbUTix/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/nu-violentei-dreptul-la-protectie-impotriva-violentei-abuzului-si-exploatarii/3978f4e4-d460-4144-948b-fd90492257f6",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U3L8 - Protecția mediului, condiție a vieții",
+            pdf: "https://drive.google.com/file/d/1gskP2Sv_w1pgQl9-UazUUBPP2sMzpoZ9/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1Kj9_ECRCgUNlhgjd9_pZ9F3PeftHPhUl/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/17NuG--FHSRsXXk_7weKTZdztpGXwgS51/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1RRZ9qljnLlBM04NWVdt4MoHMR9Kwxvo2/view?usp=drive_link",
+            interactiv: "https://dashboard.blooket.com/set/69cfdbc1fc79f9486b834459",
+            interactivTip: "Blooket"
+        },
+        {
+            titlu: "U3L9 - Copiii, promotori ai propriilor drepturi",
+            pdf: "https://drive.google.com/file/d/1TcdBL11esICDWIcEzntPsy2-sdt_KVKN/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1TJezz6sXoq6S8USOtKaS5DJdp4jBduLF/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1g1wdfJaZKyFcePY-eHriPXwODBhc5z_4/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1VnnUOR8X_Ks9ZFmFFaIKa5M2bcPjbxwO/view?usp=drive_link",
+            interactiv: "https://dashboard.blooket.com/set/69cfe0a1fc79f9486b8345e4",
+            interactivTip: "Blooket"
+        },
+        {
+            titlu: "U3L10 - Școala ca spațiu de exprimare, exercitare și asumare de către copii a drepturilor și responsabilităților",
+            pdf: "https://drive.google.com/file/d/1LpABtZN9y2NcMsBdKldUQd27Ck8Cdhd6/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1O1-WfYEi9JZXtsrIwT4a_ZAicjnntqHm/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1RXfixwbfZWltWPYR8qkY-Xg2_Kj4qYw2/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1lylCkABQ0nClO-Z5VwJ8I618pa8o-8lP/view?usp=drive_link",
+            interactiv: "https://wayground.com/embed/reading-quiz/69cfe5f50217db89e38f17be",
+            interactivTip: "Wayground"
+        },
+        {
+            titlu: "U3L11 - Recapitulare U3. Drepturi și responsabilități ale copilului",
+            pdf: "https://drive.google.com/file/d/1zj1PZ2H4SsJyUG5bzxrsnhBNlky_cFs8/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1CAu30wzFce3VinCJSu9zd8dxTvPyxxFt/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1Rkqr3BrWz-tIWCGLL0MaQ96ZuCibjZvl/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1edi929p0Qrd1pPnnRWyXyEROfQDXuMvY/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/recapitulare-u3-drepturi-si-responsabilitati-ale-copilului/cab6c198-0083-40a4-9c14-343dafdf7aa8",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U4L1 - Copii în situații de risc",
+            pdf: "https://drive.google.com/file/d/1LBy-obzGqVJHtfaB3XlD99wYCWoO0vld/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1pB-jCAo6_tpoKoWV6xi7AefBqO9wflN2/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1bwOJxABBMfNMWCHQ_mCZWGxdJiFmNten/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/177dqu1StVvBT_YcLY0cYB9pfmbNVQDX1/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/copii-in-situatii-de-risc/53034464-ba6d-4876-8666-34c96598bfe6",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U4L2 - Instituții guvernamentale și interguvernamentale - Rolul statului în realizarea securității și protecției sociale",
+            pdf: "https://drive.google.com/file/d/1QgMa8rWBhq98kSUJj3UfqRyJQ9hbfFJu/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1IQuKF5Mr_Ny7fwx_2F6kPpWknOlRyURt/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1YKIGdp-blyZek9KlVnIH9wvh_UB0gGBm/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/16DM3oMrf5EC7B_POPsjgCd2x7ekHODb-/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/institutii-guvernamentale-si-interguvernamentale-rolul-statului-in-realizarea-securitatii-si/4363e42c-9660-4f91-817a-c76c76508864",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U4L3 - Organizații nonguvernamentale - rolul societății civile",
+            pdf: "https://drive.google.com/file/d/16POn1ERp-tZ50XfYPpc7vzLnOq4_u1wY/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1juIYWu80FdjUNo4l7ZuMXa_d5vbTjEhI/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1zoeSgBpeYPg4pt1N-f57V_uRoev39_if/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1lVMoF6P4PRfferfIN5YVVJ1MTivFfCu5/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/organizatii-nonguvernamentale-rolul-societatii-civile/ee418839-14f2-432a-a2e2-946d5abf35c8",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U4L4 - Recapitulare U4. Respectarea, apărarea și promovarea drepturilor copilului",
+            pdf: "https://drive.google.com/file/d/16b9Rft4pRxM3bQQjqLvK-PHgtpAiLtXw/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1MMMAOkWAfft9KcNWqBEKq_Afve5IsEB4/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1TJ2DwfkUWHiVVDjlup3rjy9tFlztYoD1/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/15LxfBItZXtKNYhJRQhx-drSuc9EDLVop/view?usp=drive_link",
+            interactiv: "https://create.kahoot.it/share/recapitulare-u4-respectarea-apararea-si-promovarea-drepturilor-copilului/203600e0-c18e-49ca-a4de-48197255c83a",
+            interactivTip: "Kahoot"
+        },
+        {
+            titlu: "U5L1 - Proiectul educațional. Cum alegem tema proiectului",
+            pdf: "https://drive.google.com/file/d/1GFSN5TRrgyp-WmhQJiAHNN5a5SokSg93/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1hsh4SEkmwNoBFdUku02nknuBKUoZ9r-M/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/15i7UYPyFyDniy7yc9OpLlhX6tECBQ1jn/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1gW_qSradFYXYYaRWsDPRa5OQmnbgHFGc/view?usp=drive_link",
+            interactiv: null,
+            interactivTip: null
+        },
+        {
+            titlu: "U5L2 - Proiectul educațional. Cum scriem un proiect de sprijinire a drepturilor copiilor",
+            pdf: "https://drive.google.com/file/d/1yoT0J8mbypBT4nWX1E0uVjiJLzw0GYja/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1fw4eAmkUPNSSC2vSCGxltKsZl3I5Ds5g/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1QTvwQD_EVj8QC9AkrGyGPM4G-3qjCtYs/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1USPDz0X96ChLotC97KrQnuoJOE6J1Pg_/view?usp=drive_link",
+            interactiv: null,
+            interactivTip: null
+        },
+        {
+            titlu: "U5L3 - Proiectul educațional. Derularea proiectului. Activități concrete și modalități de a le evalua",
+            pdf: "https://drive.google.com/file/d/1tkkiTs_XoFonygv295Aqc3motjU4bWBp/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1yDQ2LR4l9peztV8sMeDTOWZ_FWW59bvH/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1Hi-PLNeDSD-yez2VzMOMw5NHGBlIREv2/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1iaatzmmhWHCRg3z4j-6j3l9Dvj--uVQE/view?usp=drive_link",
+            interactiv: null,
+            interactivTip: null
+        },
+        {
+            titlu: "U5L4 - Proiectul educațional. Evaluarea și promovarea proiectului",
+            pdf: "https://drive.google.com/file/d/1euWPScGj_MWLJ8xqqUD1t2iYfy-QAlGv/view?usp=drive_link",
+            video: "https://drive.google.com/file/d/1wZaa4irpv1rBsp3vOM1SikEvgRHIRZm4/view?usp=drive_link",
+            ppt: "https://docs.google.com/presentation/d/1V6As2cXCrsTsfXJzZ5qJwGk_TMXT82yL/edit?usp=drive_link",
+            mindmap: "https://drive.google.com/file/d/1J3MW4Ue0ptZi-vMC1IoAw2B4Ur2_-hYc/view?usp=drive_link",
+            interactiv: null,
+            interactivTip: null
+        }
+        ];
+
+const cls6 = [
+  {
+    titlu: "U1L1 - Diversitatea culturală, o caracteristică a societății contemporane",
+    pdf: "https://drive.google.com/file/d/1HkyMaJxlK1kRzmOHWmziIYOGtGsiT0HB/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/18BebWdF_TQ9qwQ3G-RkXz7M4arCZzoTS/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1kGMv6A6f-yUviS5_o9705TEAWNrgBMAs/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1NssdO9slrr4XBwLX1FEkNuljUVkgCOKo/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/diversitatea-culturala-o-caracteristica-a-societatii-contemporane/2a7ee1c6-5b10-4cd6-9949-6832edabfddc",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U1L2 - Complexitatea identității personale în prezent. Identitatea personală proprie, identitatea personală a celorlalți",
+    pdf: "https://drive.google.com/file/d/19QVbxfZv93FE-OgIa6qMooqgJrW-g8-U/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1dcqVlqd0Rb_3lz3TLLdSskYQHJmCuLi2/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1Kn_xYZPqe0oOEf8jDDI19M-Up1Hc735Q/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1-TH2U73MZ90Bu9ajG7tZX33V024bCf3p/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/complexitatea-identitatii-personale-in-prezent-identitatea-personala-proprie/3f59bc4d-9c88-4f91-9d8c-d2805fc14599",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U1L3 - Patrimoniul cultural. Moștenirea culturală",
+    pdf: "https://drive.google.com/file/d/1Y-qkv2zoqqmNqMyL8M_6X4wPjKTSa4UH/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1NgnFTeI7_bvJ_VFo4YvvBRlu8iEnI5W5/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1B2UeoOV9cqVmRkBPxLLVQELBfacHoj84/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/17_nxJCjed-U41UGsi6g-t9WUkbQWT00X/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/patrimoniul-cultural-mostenirea-culturala/e333e940-abb8-4251-a3da-b31fef1eb55c",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U1L4 - Tradiții și obiceiuri comune sau diferite ale culturilor",
+    pdf: "https://drive.google.com/file/d/18_TmEtXHlNuB3H1YjUFoKjzXROpxMocx/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1oP6YNovP4asONhGNez-hx_VJEp9JF3Ud/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1qzKiPx4ipO9alKbdNvVENucpUI1OpHEc/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1_pYC5WzkPrFCUw-IEwxM2P8NJaN99knz/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/traditii-si-obiceiuri-comune-sau-diferite-ale-culturilor/d09023ea-6c7b-49bd-abbe-e8fc7e3b5e95",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U1L5 - Patriotismul și manifestările sale",
+    pdf: "https://drive.google.com/file/d/1SP_JMVWsrUtjrcqFle23gXpQrd7X2p3D/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/14rT9zgNmaD-uoAPGi11oi4YO7ywYtIaB/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1xqEyuB8ZiY3VI_0ZGKOrJv2QBISAH28Z/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1ctUrQU66o1ppH9jw_WTlsJVK0U4ZQhN3/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/patriotismul-si-manifestarile-sale/8b85a24a-9dfe-4f98-887e-97b593746bba",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U1L6 - Raportul „eu” – „ceilalți”, „noi” – „ceilalți” în societatea multiculturală",
+    pdf: "https://drive.google.com/file/d/1jJArnpAmOCybpP1nMpCSBxrl-aojl6ia/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1cg63n-lKswUAVgxta2u_Yj6aguNtcQcc/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1itSsucqlzhLKcjDA_7o9GNeR2dqpfQxD/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1upkoEiF3jSsVv-s0ahggTxGEjQDenl5D/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/raportul-eu-ceilalti-noi-ceilalti-in-societatea-multiculturala/a0fafb59-8dde-45fa-8c9b-5f3910b83a08",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U1L7 - Raportul „eu” – „ceilalți”, „noi” – „ceilalți” în societatea interculturală",
+    pdf: "https://drive.google.com/file/d/1LqO8XONJ9lzXopDqgDEcDXwXwijFSARg/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1fj-Ae3utgMABhQLlWEtHXLBYeYgmox6G/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1-PXs9F7PvTXyXZpo1yEHFt7K-3mdL8Co/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1G-1tp4mF-rm2J4mC-2x_gMzxc2x2-E4i/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/raportul-eu-ceilalti-noi-ceilalti-in-societatea-interculturala/f66b3665-70b4-42f6-9b25-52299dc5c2c0",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U1L8 - Recapitulare Unitatea 1",
+    pdf: "https://drive.google.com/file/d/1qgf0y_f1GyFXWTCoLyoMw99c_ZDJsV2u/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1OsJR1q6u81GqBOo8EEv7BX7xP17IfU4T/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1BicNi9AIFxrmXYTGogvTxIsIXEreYDa_/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/15Y8V4GTZdXtHEhNzISGYVVS_Dust1k36/view?usp=drive_link",
+    interactiv: "https://create.kahoot.it/share/recapitulare-unitatea-1/3255fd4f-e4fc-49d6-ac49-6255c311839e",
+    interactivTip: "Kahoot"
+  },
+  {
+    titlu: "U2L1 - Principiile și valorile unei societăți interculturale. Dezvoltarea identității culturale proprii",
+    pdf: "https://drive.google.com/file/d/1td6SH-SHlhvPRppJp95o1v4Ly_hXqzYQ/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/17NYJ3zM3UmJTBcEiWeOjZam_oOK_aXxW/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1uwDVJn9ZM5edsU8qMYDc37dsdJM0n_Rv/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1wa-5KQCzxUCuyvxC_txn6O0zkboNZtyt/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L2 - Acceptarea și respectarea diversității. Valorizarea pozitivă a diferențelor",
+    pdf: "https://drive.google.com/file/d/1nKYfOm8SKi-PFSJWcJKJ1FY2Kv-NBHO9/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1bOpRuPm5HkuemUZdsJzj-z4tkYvyvmK6/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1mpWeSOUGwXKtyYsIE-OI6wHJP8dVgd5U/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1BxzBXi_2rAlK6scUAyh6ffoaKZb7mg9Y/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L3 - Tratamentul egal al persoanelor",
+    pdf: "https://drive.google.com/file/d/1rnF9JKDH8rSYkTFZxxt5KYrxSZonUXMB/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1ktEsZ_fc0rvJtgeGy43WjTzpXNqdWpwb/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1Gw8webQxcYW6Ke3MGOzR2CvWyV_4cn7_/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1tsPxzK7p6hj9b3w0DWzRupgTT0Afdjw5/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L4 - Solidaritatea. Promovarea incluziunii sociale. Dialogul intercultural",
+    pdf: "https://drive.google.com/file/d/1-j-YBOfpEKNIi-qS05juzu9-yZ1ZoQWy/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1jGhM-f45RKkyUa5e8TPhMzwepW1RYo-Q/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1TH83yp4Q4IRh8BOJ68luVkoRSpa4C9WP/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1AaKU-r_NVbvT8GCTl8Rgf5YEAMlrNgFR/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L5 - Abateri de la valorile și principiile societății interculturale. Intoleranța",
+    pdf: "https://drive.google.com/file/d/1HmZyOztTIF32Sfs_9p-319u_VFccL6Q5/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1PNkGSMC-dtHxjtq_qiQz6aOuO9UWdRaN/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1SUB7U6hFANxRmCcwhnMqWdwlyk-1WMkT/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/156LRNmsjp7ADHdj0whNQpDkHIFhVyw32/view?usp=drive_link",
+    interactiv: "https://quizlet.com/1141615892/abateri-de-la-valorile-si-principiile-societatii-interculturale-intoleranta-flash-cards/?funnelUUID=b120fce0-d3fc-460a-b73e-6a49e3195486",
+    interactivTip: "Quizlet"
+  },
+  {
+    titlu: "U2L6 - Forme de intoleranță",
+    pdf: "https://drive.google.com/file/d/1WXkFBd52fTJE-gGhon95pgke7rxoZX2B/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1YWA9uD6KZrLil8eCo-HY-Q2K5RcPS8-J/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1RekWkYxYKm2mHLNM9AJ1A9Nf4x-iZ3Si/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1ZtVlW1ETHOC4XKsbFE2fb7h8xGEPnnGw/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L7 - Manifestări și efecte ale lipsei de solidaritate. Marginalizare, excludere, izolare",
+    pdf: "https://drive.google.com/file/d/1qlaod-wMIhzxZ_jMe6fqstqHw02hlIIL/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1X9Rog7RDWkBGZevt9-6gjzaqZg5Auhrj/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1QKnTMyvul3PJ1jJFI8fgSrUP9KR2wbVp/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/11lZoSsWiWCj-VX1Ac73UQC-l7YNlDp2T/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L8 - Recapitulare Unitatea 2",
+    pdf: "https://drive.google.com/file/d/1NkrrRsI0jkPQIbkIslL6UlwbA0DmF5lb/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1dG1DQXAZo2LUYRwKOdILFuR1KeDokpeh/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1TnqaCNu7T2AxAoioL44YB6Wt2G0bYSWk/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1S-ZzZqngDqz8htpYHjouPVFkT6YQQmrb/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U3L1 - Trăsături ale persoanei în societatea interculturală - spirit deschis, flexibilitate",
+    pdf: "https://drive.google.com/file/d/1Ilja0JD47HbJUwgpQw6DykFnhrQx7oQH/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1vNdstU0LjL5BLD0S8R7P0-fsMaQ9dFOS/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1LNcowLkhLKtdRUmuYypUpL1zg6oM0t8N/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1cLXKUe10kYTFf4W4847QW5iKTy7Fdnwh/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U3L2 - Trăsături ale persoanei în societatea interculturală - cooperare, abilități relaționale și comunicaționale",
+    pdf: "https://drive.google.com/file/d/11qwv4oTFkkX2rC16veUeQ14VIKB5RTUi/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1lod-8M19piQhlJl4gJdJHkS6NfpjYyoE/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1QLjlgZEQxFaDjMD7fucbVm5lRfPCm5Tx/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1ZCD7seQ22m1RxutPm9NbFXKhY3qevyLZ/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U3L3 - Comunicarea interculturală. Specificul comunicării interculturale",
+    pdf: "https://drive.google.com/file/d/1Q28YNkblt6bwiUi7XElsZPZ4g-U0RMZW/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1wTiFFNmxygPiLi2bMnxTyjVYYxdSq5ur/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1YGccIUJjCfYOziNcpbG3LkERPIXGnkxd/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/19PESYwnO7QAeCxHIaXRyZcLJlwLYMZRY/view?usp=drive_link",
+    interactiv: "https://wordwall.net/ro/resource/109846150",
+    interactivTip: "Wordwall"
+  },
+  {
+    titlu: "U3L4 - Bariere ale comunicării interculturale. Stereotipuri și prejudecăți",
+    pdf: "https://drive.google.com/file/d/1thDDsKMSMNXgaUgBqRg5GFt48KSwb2lR/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1QUIYUqOzrUKGi3s0P1Z8kO1_cc12aZ0c/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1ATDSjMXehbzs5OJlvUuWH47_6JkoAGOm/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1ntlEnWncP6Ew4sOAWMpYKTjJmDpejoTQ/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U3L5 - Reguli și principii pentru facilitarea comunicării interculturale",
+    pdf: "https://drive.google.com/file/d/1n6-bn8jzuw3akYF2XnJZmRg2fpAa6llv/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1mM43-UyaG7D4Qc37DsjY1xwndscGsbFQ/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/103qDc9lKZp8A9XRLfNLMUTiTBHtiTeWw/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1Jvbz3izrji1tNxU5Dz9ZoMJ1Z8K_1cjh/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U3L6 - Recapitulare Unitatea 3",
+    pdf: "https://drive.google.com/file/d/1IDHhUiGxQuGnnrSGF7Ql_4pnvJh1QP4_/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1VJ8KM8unpuorJs2pqDK3eVB0AUnRxR6p/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1xXf01mVSAfujO8y-X-VZTpreLOEZrAAK/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1XbKSYVdpo8rQ1e2PKDawvQxiRNQaRImQ/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U4L1 - Proiectul educațional intercultural",
+    pdf: "https://drive.google.com/file/d/18sfhrYDOuL1gxPc2PnJCYWOOnuQ_Mgwc/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1KsVjudcUcsUG4X0xJqyF3MvbYTk02_4b/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1LqvSKELLHPfDQsF1ofLEowoWqKJoNxID/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1Z0ar4b5S7zjBqPgQ2EXbu_EC89ylLEp6/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U4L2 - Alegerea temei proiectului educațional intercultural",
+    pdf: "https://drive.google.com/file/d/1WyCzKkfNi4W90_uGAqGZBcvnrZ58vt_v/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1rhoh2STSZlDRdz3b_2rMMjEkkUcb87Hv/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/14hqWjVJRyyL9NDb7296c-1irGcw5j0lO/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1pUY9hPcdNr0rNqyHURk_jVdaXvFiC0gc/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U4L3 - Elaborarea fișei de proiect 1",
+    pdf: "https://drive.google.com/file/d/19bhzku_2JCZf9S0x-VzuYKFu-PXpFVVx/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/14jqOuMkKW98cbZJ1OZRs1QDdeWM3Vmlx/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1B7nlu4H_iyiWWsYlb3IdBWPeGmbX17fI/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1z2eQ-kFzRcRabjgKYXrJ0NYZyKAG4Tsl/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U4L4 - Elaborarea fișei de proiect 2",
+    pdf: "https://drive.google.com/file/d/1E8mAfv77IS_-eGkbasm6DJgWncUtmY4K/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1-1Valhq9Vfrvc-fPb8jlUgg6EaybyeZ5/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1Th5Cr04e077WHc4tqssiHZ-4GzyQQqZ1/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1X0RIIeBmHQxC6W9skvtc7z9cZlVdsmId/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U4L5 - Derularea, desfășurarea și evaluarea proiectului educațional intercultural",
+    pdf: "https://drive.google.com/file/d/1EOi99yCFSIAv8RppiDzQT0sep78hBHOu/view?usp=drive_link",
+    video: "https://drive.google.com/file/d/1Wr1wM9lbzErE8sRmzqhyD1N0RmFV5e7R/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/13eJ2jI1utkJMlU9kEEc1smg_tc9Ozrc_/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1qpeKqQ-dFuVh33Ap5U2Eo-xeAD4okHE-/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  }
+];
+
+const cls7 = [
+  {
+    titlu: "U1L1 - Drepturile omului",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1kxsql_WbyM-kyNC5lqUim4G0-T6mV-nM/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1czrqUqFLDorS0VKg_5uzjoa1svA-Xron/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1jWNl5mBNNawxPE8wHJrQDmJS1heGDlfs/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U1L2 - Corelarea drepturilor cu îndatoririle fundamentale",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1SkYowFWBZYHOu-3BeUsZskR7HfGjX_MK/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/18K8S1wKdqTRcMpsUF0QVErVeEzVrUvNm/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1xKDMjQRnuMgtgfRCopQQPbxUHlI1VQpr/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U1L3 - Forme de guvernământ",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1x3ZMutf43SE8wP_-_cTDkBmtpz04jsYo/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1h2C-3cv_76YmMLCYLYCceSfmswLp5IsE/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1JXVhBlLHPOp7Dne9pQT3pBPhKniXQ9gD/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U1L4 - Regimuri politice",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1-BaeCAxSIwx89e8M5cdgwitoo9dQ9WNN/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1jA_8LzxxiC-5GxYB5LUWox043R4bLr7z/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/10h3ezEnMOBtDH9ucMkxVK-9VdKhWVUCT/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U1L5 - Constituția României. Structură",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1O573w837F-iNBoMRXfX7yZARTNYL5aCO/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/108ynFHPOVqsp0p2pk_YQF5bmrARR-6GY/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1MYD02bMJSDHtzn5H46bFeaz-bYEzsw9W/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U1L6 - Valori și principii constituționale",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1S3dK297wZPqNHnkeDvTN1uCns7e6cIUh/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1xnbTl-0_3s5a_DDwVkZRG9bdCR3qBCUq/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1W7-qeKdfTnyrokK-D1Wl5LRBTS_REg1t/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U1L7 - Recapitulare",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1DrBDkjpc-UykVNOgOot2zQP1GFynzwu2/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1cfWm_WPFWaGfIAK1ZOauAJA8XXbKIB3l/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1K7pdvGWuY0IRDEd-MGYbu4R70GGln9oI/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L1 - Statul democratic și principiul pluralismului. Dreptul de asociere și partidele politice",
+    pdf: null,
+    video: "https://drive.google.com/file/d/13WK-VIxSVJoDFJHiEJsPayFXtpekmrZg/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1yR7GxMpAkxPRD-OCCgN2tHEaf5hp7Cc5/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1j5Gfzmqu81dRNj_xl027HEOc1pe0SJe8/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L2 - Autoritatea legislativă. Legile",
+    pdf: null,
+    video: "https://drive.google.com/file/d/16NjZ_2LFF49UXRhRM40C8mrW9mDk9972/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1Vf2NK5nfTA1wpzY98wM77akgy_q6YXa4/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/16GHzqX7R5s5qSN0AUmuZpH8bXfySV5Cm/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L3 - Executivul. Administrația centrală și locală",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1VMx3uRmbIeDYytohujyb2hxiOOMWIcAF/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1TKplP7h29he-jT7ZZBnkVyCn-5IE90j4/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1aPQErqYSbDD025tP6wuCT_r22N1-rlIW/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L4 - Autoritatea judecătorească. Aplicarea legilor",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1xA2wWe1gQeiKAp0UIf1kv3IGaHoHezLq/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1NJUNDDi6hIRq3VlBvIYZ7IijYFU3FaGC/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1GDgr0pHHqlAOVrt7Rfom3ocNsYVTQTRe/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L5 - Președintele României",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1on4NB1bQHZEM9uy85-Rz_XFDX36J0lvU/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1BvTutgLlqXPnS8S4Rk7Ka_USUUb9_hHK/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1hjJGfCNpnBF_TM4Bk0Cax6Id1Rm-wzTK/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L6 - Statul de drept",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1H8aDOu9dy3Pa-PL5xfcvAVCsYEsAE25Y/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1WmU2EyDci5-yVgYZSJEFGs6z025nVuas/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1XiPNbYsm0ILQdDvb1Vzr3bJBQ5avpl7-/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U2L7 - Recapitulare",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1IfiS9zV9WaWfF7AbyCS1j1-x3YeiaN4V/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/1VRqFdow01toNJ2xViC5BhKei6yjIj9Z2/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1YZqjodF_Gn6jpT9P4laIlGDHQC9advvN/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+    titlu: "U3L1 - Procesul de elaborare al legilor. Participarea cetățenilor la elaborarea legislației",
+    pdf: null,
+    video: "https://drive.google.com/file/d/1AXJf7yhp0xlvG7tGIGNkcG_ALVjZ4tDf/view?usp=drive_link",
+    ppt: "https://docs.google.com/presentation/d/17jfGui0UJMpOstRLTbnY9Mw1ucAzu42c/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+    mindmap: "https://drive.google.com/file/d/1MQG1gSbYLRWfaHdVlai5LUT6mYQnIsNL/view?usp=drive_link",
+    interactiv: null,
+    interactivTip: null
+  },
+  {
+        titlu: "U3L2 - Drepturile și libertățile cetățenești și respectarea legilor; limite ale libertății",
+        pdf: null,
+        video: "https://drive.google.com/file/d/16JIFCa0t4pATvjWWNst74y13LFJr7_pv/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1F254BjVfW2WXQqT7NunWSsJSjuogKxmL/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1OywYRnI7MXrlmLUL8wtD4RO3yPv8n9ze/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U3L3 - Justiția ca instituție de înfăptuire a dreptății. Egalitatea în fața legii și accesul la justiție al cetățenilor",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1TfZ_S2YOWB_HUjvri9YHBl-iNQO7nJ9g/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1wcKM-m0f3f9e6dbhlS4V3WczPtpuGGP-/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1gQ8OHxdd2xXrd5XBge0MCmZUw6DT41ny/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U3L4 - Copilul în procesul judiciar; delincvența juvenilă; consecințe ale nerespectării legii",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1AV0bkNFgE5hW45sPzUqnhXMXv2bX7ugj/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1Y73in5DHlaB04hTbaWfeDWSAB1_NBWaz/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1BrHcWHmMZlOZthq_zniNGRJ7UTQwkk_f/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L1 - Implicarea civică în contextul democrației reprezentative și al formelor de manifestare a democrației directe",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1-soER_jbRqqH1NUZHGaQveFbp3_xAePc/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1ifzSgOG8ErQwti9uBOr6PKSAEkomUoeB/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1gUIRagV3pIXQ09BCLkCRZtsXrAEl5J9G/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L2 - Alegerile și votul; Alegerea reprezentanților; Evaluarea activităților reprezentanților aleși",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1qA364M-YTcVbsNJ9wy2qK-CX6ydTCRX0/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1CLjMsuzdNBnvsdMiKFscDNazGljrK6zW/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/16nrUsdi3FlBnqT_4juF6e5Vlqt6jC9lp/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L3 - Societatea civilă, organizații non-guvernamentale, tipuri de inițiative cetățenești în comunitățile locale",
+        pdf: null,
+        video: "https://drive.google.com/file/d/15uxWX7uQfVFV0vu_grjrGed8NpTnomWL/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1KqrSRb3kff60HyLGRVvRD2wIJSU3bJCN/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/17irLwZoBg2NNY3GWOE2BZkGXIzg6VttY/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L4 - Rolul îndeplinit de mass-media în societate și în formarea opiniei publice",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1wJXFjVsB_5_d0hML5FX7eMhIsbBePtU3/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/16Cbu_DWJdreFXTU85KKdw8u_-NB03lUA/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1CWfnbs1hF0dz1b7xGtDtwfni2oURpDhV/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U5L1 - Elaborarea și derularea proiectului educațional dedicat problemelor educaționale-locale",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1JhwbEuBsee4X5LG431omoSJV_VeZ3dj8/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1uocLWBuTZxPKY0uLKzgceAZ0nSosvs0t/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1l204d6lG-v1tkBQ1rsIabnBgC2zij0f4/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U5L2 - Elaborarea fișei de proiect",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1MemmQXQpunSDHIqmzzrzmOc7QWz71sH2/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1zI8GnjfkZwM8X3U2TAZf7lavEN-fTtW1/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1Wwk6cE6HHkykZqPCapkcln4IJHoRU3Bj/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U5L3 - Derularea proiectului propus",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1Q3ODMx9QTWgLrT8gUL_Dxln4OzfzFQcM/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1TncDOlJ4AGocF7MFnivOsNz4cwhPftIy/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1zHgNvu0c9Kcnpf_GKaeH-yDSkV-sIV6N/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U5L4 - Evaluarea proiectului propus",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1H8uuuBWVXkG5WgdezScSOyGHGibMGppR/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1kRy_R6tsEj5T04J7DufT1lZvT4HGOja4/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1pljv04mq17NFWX3QXfQmqDtposErP4Ze/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    }
+];
+
+const cls8 = [
+    {
+        titlu: "U1L1 - Calitatea de consumator de bunuri și servicii. Calitatea de consumator de servicii financiare",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1Xf7lMQKAwYZQSLa8jsxWWODkD3zDkRjb/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1yZGp9VTZ3ytTYhBq4dFAhOWZWsEuUImi/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1Uduo29YPimQBlz42OE4jgMqjcBfHQEfF/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U1L2 - Drepturi și responsabilități ale consumatorului. Protecția consumatorului",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1PUjLlnWKpbbp8ypFvCZw8zQsk2dcPI9q/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/18epjjgo2HwuAXKHdfSi_FJSP84C2bsmB/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1sKLM8vyAJ0r6EVCc8UPQTM_azjgR7-1C/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U1L3 - Producerea de bunuri și servicii",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1qlHoThLUTmPV370gKGUDV0JhiG0Yovjt/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1H0nsvAWPHGvWFyqk3O-_cPX3AR1xwjnJ/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1T4Y8fls71vF-AS-v5s27ljSotr_j96ig/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U1L4 - Producătorul și spiritul antreprenorial. Inițiativă și risc",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1_5LR8O0gvGmlbqvViKREMonQRB6D_Igw/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1rxFaGwIzujdlCKAdvMJ9gCyQk5q8QJbn/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1S1ojoVFDmUyUBOn5mCbd_KF3d9BhBuU4/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U1L5 - Recapitulare U1",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1TYqwFQVF_2y9rVujiOBD0OekWbkPGB3J/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1M1vLfgajE5nRuqBXkBHk5GryRMv3aIRQ/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1-ldfM_kwvjViHH5QtIAuo51ddkVyW58L/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U2L1 - Alegerea unui scop. Resurse necesare pentru atingerea scopului propus",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1JLJEHygwN9OKxEUxrcf_8iFBqTvUBceb/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1kyYim6tyFiwvtjFhL0d3p0cVmPMsn-S2/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1Zb-QD2ONhSmIS08pev501qj6R2qjJshg/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U2L2 - Venituri ale familiei - cheltuieli ale familiei",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1kfYIrSuoDtgYwMV_kHBj1PgVTS5ifywP/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1BYfh8DQJSfOsI0XYIhpC-lUhvdTqtC6Q/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1LL62C0ycl_szyceHKWJLoFqbM3rIiTsV/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U2L3 - Venituri personale - cheltuieli personale",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1dz12BkA4nfbeKvJpywL9Mfrg2jONlhNR/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1TfCOQcV45XxLaVKi0JEAfqwU-MwRm8TI/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1TL0CWFRe5mYs3HzEQExTjDWO-d-oSwUu/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U2L4 - Forme actuale ale banilor. Valoarea și funcțiile banilor",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1UGOMrBrwEKIJF7JxQMcONhweJWqz0hyy/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1rfDkFOEidShjfmML4Ps2YMHsnwlBOc_-/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/17vte1OHa2N2f-Q6-jg2BNaQ6xBHWBasQ/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U2L5 - Moneda actuală a României",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1UuiYmSkm8FtfIV8VeKiK4OuSdVKsCY2J/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/14yWz897zFIhlcHUwkm8Y8b9KBeBAquOg/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1vwuwGEdUnhF3DpLh0JuDnUa_eTa5N19w/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U2L6 - Instrumente și mijloace de plată",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1ofafQmxTqT-B8oobOWGfjEywk1sdQ76c/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1MRvGs--yVGvoqJP2rQB62OfNiARPkvXG/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1BLrXVrGZhum9Nm9LLS2eye71w4jnvqXY/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U2L7 - Recapitulare U2",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1PDA3VwGLFmh6hKXw8NASrEYCRbNyaXRb/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/169dBEKE_WoCeCw9-AiFveaRFENAUH4sy/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1StfgXilKpqblxiQvYbZbCJHJFqxU0fm6/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U3L1 - Produse și servicii bancare",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1BDkXzmXqhYAcMa9wfiogMxpF85WYB9ey/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1mg5gsHxKUvm9j4JrdWGWNfJ9nEP8ayms/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1XGIYfMa8HU1KWy2iYtZ3hBoA_huMero9/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U3L2 - Mijloace moderne de economisire. Instrumente de economisire pentru copii",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1MmQhrhvoVoz8RflUE-O5ZQy4cFw68QKs/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1gLjMm7ww9X1eZxv8sfSdf3PVDkqsNCml/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1lEePE9xvhf5_t55VVtdlstlIJ-QewPKX/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U3L3 - Alegerea ofertei bancare. Avantaje și riscuri în raport cu instituțiile bancare",
+        pdf: null,
+        video: "https://drive.google.com/file/d/12cjvceAfS3G_vH7xCvoR6sJYP_xDqM8D/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1TN8M_7Oytv7N2L9ycLbZkniEDj4kommD/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/16-L6LRCq4WSyz2ixVpvY4RMFfvKXLeHf/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U3L4 - Produse și servicii de asigurare",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1-JQImJDNmVSsUK-6mHd0T8u8qh27d9MY/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1UR7BUHDBhW1D8hJdYD4Os4ylvhOB1F7Z/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1BSxK0Ajh0VQ-bSL3E2pw-kQ5_vVqxBQ-/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U3L5 - Recapitulare U3",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1ILcvUde-9llFviEwJFWk-Sxaeicm_2xu/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1wvyeEf2VhyiJAh2TjBdabHw4OZUfeW-0/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1jCduBqtcTgcE86Cw_eoYkjXc9X5Pl12o/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L1 - Alegerea temei proiectului educațional",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1HhDRRn58rl5HpqSOYQGpaZdMg0JgQlKq/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/13a6109RReQ7F8Z-7hdiJMg_tgvwgNGq0/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1iuIDhOoUX4rQPHMcdY0cejseLIWPcuw7/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L2 - Elaborarea fișei de proiect",
+        pdf: null,
+        video: "https://drive.google.com/file/d/12yau3eLmggj1G4FZjfRwIH4588AZ0qsE/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1j3A8HJc93w6xPqGQVPIYPiBYJ2Cahuhs/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1rjk6QXOG83WCF7N_HR70IWvztUMBxdeb/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L3 - Derularea proiectului propus",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1ILWZ9WNBrsAA8xZv6depFCOst1i0JnkZ/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/1qqfdin0wwcIRyhvPp2XNAYXmkaBv7pbB/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1EdDCXsWCGmCAo4aDjgV2tAeHaP7CfSyE/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    },
+    {
+        titlu: "U4L4 - Evaluarea proiectului propus",
+        pdf: null,
+        video: "https://drive.google.com/file/d/1MapdWq4vWCYYE1tKUiz_peZPzZP0rxhV/view?usp=drive_link",
+        ppt: "https://docs.google.com/presentation/d/18SDEgPnbiwpKVWu5zlaO4_-QDze0BnZc/edit?usp=drive_link&ouid=107980437473866813283&rtpof=true&sd=true",
+        mindmap: "https://drive.google.com/file/d/1Y_CQRerebUQIMhUXlvnr-FSurdE8_pMb/view?usp=drive_link",
+        interactiv: null,
+        interactivTip: null
+    }
+];
+
+const juridica = { 
+    title: 'Educație juridică', 
+    lessons: [
+        {t: 'Omul și dreptul la viață', d: 'Integritatea fizică, legitima apărare.', k: 'https://create.kahoot.it/share/omul-si-dreptul-la-viata/7d719658-25b0-48d4-ac70-e21d8905dbdb', vid: 'https://drive.google.com/file/d/1tizPsS0zpKa7Yd1lrbqiZrmGRUBkc88z/preview'},
+        {t: 'Drept și drepturi', d: 'Reguli impuse de stat. Drepturi și obligații.', k: 'https://create.kahoot.it/share/drept-si-drepturi/de841f1f-ffd6-49f1-9565-2130ba404819', vid: 'https://drive.google.com/file/d/1cvylBMkUqRlTdWswLMcYTyVuoqeInl3-/preview'},
+        {t: 'Individ, societate, stat', d: 'Omul - ființă socială. Statul și Constituția.', k: 'https://create.kahoot.it/share/individ-societate-stat/18462e14-be44-4405-9692-891421eece12', vid: 'https://drive.google.com/file/d/1O-xcy4iLP6yoQgk2sc2j831uEZ7J-BBG/preview'},
+        {t: 'Identitate și cetățenie', d: 'Certificatul de naștere, buletinul (14 ani).', k: 'https://create.kahoot.it/share/identitate-si-cetatenie/d24e8ffe-8be7-451d-b827-34ef802d78b0', vid: 'https://drive.google.com/file/d/1zD8eJHs2Nm3ed1rVjEfJE05gmCsX7R5G/preview'},
+        {t: 'Familia noastră', d: 'Căsătoria, rudenia, obligația de întreținere.', k: 'https://create.kahoot.it/share/familia/d0a72383-09c7-4afc-ba58-d7f310571c40', vid: 'https://drive.google.com/file/d/1QdP0EAI-bYw276048m2zuTiRAgNG9hn8/preview'},
+        {t: 'Tânărul și sănătatea', d: 'Dreptul la sănătate, reguli și responsabilități.', k: 'https://create.kahoot.it/share/tanarul-si-sanatatea/e4b98423-e02f-45ff-8275-ba07f1f10360', vid: 'https://drive.google.com/file/d/1jDJcwmFMarrXL11RfUyTzW5QHSmdryLf/preview'},
+        {t: 'Viața intimă și de familie', d: 'Inviolabilitatea domiciliului, corespondența.', k: 'https://create.kahoot.it/share/viata-intima-si-de-familie/6378fb21-c4fa-44e9-a816-632953edf495', vid: 'https://drive.google.com/file/d/1NnSYrVnyDSATbvERnWALuC8IB-IdasSY/preview'},
+        {t: 'Elevul și școala', d: 'Anti-bullying, interdicția telefoanelor, sancțiuni.', k: 'https://create.kahoot.it/share/elevul-si-scoala/8a0bd8b6-46aa-4874-a5f0-f3819055f2a6', vid: 'https://drive.google.com/file/d/1AEeVZNq20NX494DR5EFgDMbxgiUL8wg0/preview'},
+        {t: 'Circulația și călătoriile', d: 'Reguli pietoni și bicicliști. Ieșirea din țară.', k: 'https://create.kahoot.it/share/circulatia-si-calatoriile/d3ab3028-ef78-4e7a-ab9a-697005b49878', vid: 'https://drive.google.com/file/d/1QbuD-0_yAqxzvHIRVX8pkC3ZGpJYvomB/preview'},
+        {t: 'Elevul și legea', d: 'Răspunderea penală începe la 14 ani.', k: 'https://create.kahoot.it/share/elevul-si-legea/5f0740d2-8fef-44d7-b8d2-08dcab6ba6b3', vid: 'https://drive.google.com/file/d/1FEQR81dc6AJxHK9-vzXU9zJjHLONa30y/preview'},
+        {t: 'Oamenii legii', d: 'Rolul polițistului, judecătorului, avocatului.', k: 'https://create.kahoot.it/share/oamenii-legii/1978ccf6-1ecc-4acf-8ef0-187a6f95cefc', vid: 'https://drive.google.com/file/d/187qqh9g-A-fYqkZRMpYRLLlOrIpfgBST/preview'},
+        {t: 'Libertăți și decizii', d: 'Libera exprimare vs. discursul urii.', k: 'https://create.kahoot.it/share/libertati-si-decizii/c3c193a8-f0fd-4232-833c-dd9ad3a2a8bb', vid: 'https://drive.google.com/file/d/13T-l9q5t7bnv0jvCag1YF63ERmR-Czq1/preview'},
+        {t: 'Tânărul și munca', d: 'Munca legală de la 16 ani (15 cu acord).', k: 'https://create.kahoot.it/share/tanarul-si-munca/f44f864f-511b-4522-a9aa-2bdb7179f10e', vid: 'https://drive.google.com/file/d/1xXET_K6AXtBDEzuWkpe8lov63rikM0E6/preview'},
+        {t: 'Noi în online', d: 'Cyberbullying, date personale, fake news.', k: 'https://create.kahoot.it/share/noi-in-online/120bd783-ae83-420f-adee-af4a50e8d4f3', vid: 'https://drive.google.com/file/d/1kP7oamyt3dIOKhMKfwIaRcRg9Lw_NWh9/preview'},
+        {t: 'Acte, animale, bunuri', d: 'Bunuri găsite, responsabilitatea pentru animale.', k: 'https://create.kahoot.it/share/acte-animale-bunuri/071ee6a2-9700-4178-a3e1-09ce30513f2d', vid: 'https://drive.google.com/file/d/166mLIDpFF_iAmof4vKe5uRndVyMXUo2a/preview'},
+        {t: 'Procesul judiciar', d: 'Procesul civil vs. penal. Judecarea minorilor.', k: 'https://create.kahoot.it/share/procesul-judiciar/fda99f5b-63ab-4619-9741-0ddb0f9fad94', vid: 'https://drive.google.com/file/d/1jZ27g2wFE8OydxftAqWI_9SDifZDU_0h/preview'}
+    ]
+};
+let clockInterval = null;
+
+function updateClocks() {
+    const cities = [
+        { id: 'time-buc', tz: 'Europe/Bucharest' },
+        { id: 'time-lon', tz: 'Europe/London' },
+        { id: 'time-ny',  tz: 'America/New_York' },
+        { id: 'time-tok', tz: 'Asia/Tokyo' }
+    ];
+    const now = new Date();
+    cities.forEach(city => {
+        const timeEl = document.getElementById(city.id + '-t');
+        const dateEl = document.getElementById(city.id + '-d');
+        if (timeEl && dateEl) {
+            timeEl.innerText = new Intl.DateTimeFormat('ro-RO', { timeZone: city.tz, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now);
+            dateEl.innerText = new Intl.DateTimeFormat('ro-RO', { timeZone: city.tz, day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+        }
+    });
+}
+
+function render(pageId) {
+    // Clear clock interval when navigating between pages
+    if (clockInterval) {
+        clearInterval(clockInterval);
+        clockInterval = null;
+    }
+
+    // ASCUNDEREA MENIULUI PE MOBIL
+    const navMenu = document.querySelector('nav');
+    if (navMenu && navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+    }
+
+    const app = document.getElementById('app');
+    if (!app) return;
+
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const btn = document.querySelector(`a[onclick="render('${pageId}')"]`);
+    if (btn) btn.classList.add('active');
+
+    // === 🔒 START LACĂT VIRTUAL 🔒 ===
+    if (pageId !== 'acasa' && pageId !== 'contact' && window.isUserLoggedIn !== true) {
+        app.innerHTML = `
+            <h2 class="page-title">Acces Restricționat</h2>
+            <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 20px; border-top: 5px solid var(--accent);">
+                <i class="fas fa-lock" style="font-size: 5rem; color: var(--accent); margin-bottom: 20px;"></i>
+                <h2 style="color: var(--primary-dark); margin-bottom: 15px;">Conținut Securizat</h2>
+                <p style="color: #555; font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px auto;">
+                    Această secțiune este destinată exclusiv elevilor. Pentru a vedea lecțiile video, materialele Kahoot și subiectele de olimpiadă, te rugăm să te conectezi gratuit.
+                </p>
+                <button onclick="document.getElementById('btn-login-google').click()" style="padding: 12px 30px; background: var(--primary); color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4); transition: 0.3s; margin: 0 auto;">
+                    <i class="fab fa-google"></i> Conectează-te acum
+                </button>
+            </div>
+        `;
+        return;
+    }
+    // === 🔒 FINAL LACĂT VIRTUAL 🔒 ===
+
+    if (pageId === 'acasa') {
+        app.innerHTML = `
+            <div style="background: white; border-radius: 20px; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 40px;">
+                <div style="background: linear-gradient(135deg, #4e54c8, #8f94fb); padding: 60px 20px; text-align: center; color: white;">
+                    <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Bine ai venit pe Platformă!</h1>
+                    <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto;">Lecții Video, Kahoot, Documentație și Pregătire pentru Concursuri.</p>
+                    <br><button onclick="render('juridica')" style="padding: 12px 30px; background: #feca57; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">Start Lecții</button>
+                </div>
+                
+                <div style="padding: 40px; text-align: left;">
+                    <h3 style="color: var(--primary-dark); margin-bottom: 15px; font-size: 1.5rem;"><i class="fas fa-info-circle"></i> Despre noi</h3>
+                    <p style="color: #555; line-height: 1.8; margin-bottom: 25px; font-size: 1.05rem;">
+                        Aici nu suntem doar la școală, ci învățăm cum funcționează lumea reală! Fie că vrei să afli care sunt drepturile și responsabilitățile tale, cum să te protejezi în mediul online, cum să gestionezi banii sau ce înseamnă cu adevărat să fii un cetățean implicat, ești exact unde trebuie! Ți-am pregătit lecții video captivante, teste Kahoot pentru a-ți verifica cunoștințele, dar și resurse complete pentru Olimpiada de Educație Socială și concursul național „Be legal! Be cool!”. Fii informat, fii responsabil, fii curajos!
+                    </p>
+                    
+                    <div style="background: #f8f9fa; border-left: 5px solid var(--accent); padding: 20px; border-radius: 10px; margin-top: 20px;">
+                        <p style="margin-bottom: 15px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-headphones-alt" style="font-size: 1.5rem; color: var(--accent);"></i> 
+                            Ascultă mesajul de bun venit:
+                        </p>
+                        <audio controls style="width: 100%; outline: none; border-radius: 8px;">
+                            <source src="prezentare.mp3" type="audio/mpeg">
+                            Browser-ul tău nu suportă elementul audio.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="page-title" style="margin-bottom: 30px;">Timpul în lume</h2>
+            <div class="clocks-container">
+                <div class="clock-card" style="border-top: 5px solid var(--accent); transform: scale(1.05);">
+                    <h4 style="color: #333;"><i class="fas fa-map-marker-alt" style="color: var(--accent);"></i> București</h4>
+                    <div id="time-buc-t" class="clock-time">--:--:--</div>
+                    <div id="time-buc-d" class="clock-date">-- ---- ----</div>
+                </div>
+                <div class="clock-card" style="border-top: 5px solid #3498db;">
+                    <h4 style="color: #333;">Londra</h4>
+                    <div id="time-lon-t" class="clock-time">--:--:--</div>
+                    <div id="time-lon-d" class="clock-date">-- ---- ----</div>
+                </div>
+                <div class="clock-card" style="border-top: 5px solid #2ecc71;">
+                    <h4 style="color: #333;">New York</h4>
+                    <div id="time-ny-t" class="clock-time">--:--:--</div>
+                    <div id="time-ny-d" class="clock-date">-- ---- ----</div>
+                </div>
+                <div class="clock-card" style="border-top: 5px solid #e67e22;">
+                    <h4 style="color: #333;">Tokyo</h4>
+                    <div id="time-tok-t" class="clock-time">--:--:--</div>
+                    <div id="time-tok-d" class="clock-date">-- ---- ----</div>
+                </div>
+            </div>`;
+            
+        updateClocks();
+        clockInterval = setInterval(updateClocks, 1000);
+        return;
+    }
+
+    if (pageId === 'docs') { renderDocsMain(); return; }
+    if (pageId === 'olimpiada') { renderOlimpiadaMain(); return; }
+    if (pageId === 'sociala') { renderSocialaMain(); return; }
+
+    if (pageId === 'galerie') {
+        app.innerHTML = `
+            <h2 class="page-title">Galerie Foto Evenimente</h2>
+            <div style="background: white; border-radius: 15px; padding: 40px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 40px;">
+                <i class="fas fa-camera-retro" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--primary-dark); font-size: 1.8rem; margin-bottom: 15px;">Albumul Foto Oficial</h3>
+                <p style="color: #555; margin-bottom: 30px; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                    Accesează arhiva noastră digitală pentru a vedea cele mai frumoase momente de la Olimpiada de Educație Socială și de la Concursul Național „Be legal! Be cool!”.
+                </p>
+                <a href="https://drive.google.com/drive/folders/10ykvYGKlhJrOiQpDqokaLAV38pRXG-8r?usp=drive_link" target="_blank" style="display: inline-block; padding: 15px 35px; background: var(--accent); color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);">
+                    <i class="fas fa-images"></i> Deschide Galeria Foto
+                </a>
+            </div>
+            <div class="olympiad-grid" style="margin-top: 30px;">
+                <div class="olympiad-card" style="cursor: default; padding: 30px; border-top: 5px solid var(--primary);">
+                    <i class="fas fa-users" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h3 style="color: var(--text-dark); margin-bottom: 10px;">Olimpiada de Ed. Socială</h3>
+                    <p style="color: #7f8fa6; font-size: 0.95rem;">Poze de la etapele județene și naționale.</p>
+                </div>
+                <div class="olympiad-card" style="cursor: default; padding: 30px; border-top: 5px solid #2ecc71;">
+                    <i class="fas fa-balance-scale" style="font-size: 3rem; color: #2ecc71; margin-bottom: 15px;"></i>
+                    <h3 style="color: var(--text-dark); margin-bottom: 10px;">"Be legal! Be cool!"</h3>
+                    <p style="color: #7f8fa6; font-size: 0.95rem;">Momente din timpul concursului juridic.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    if (pageId === 'contact') {
+        app.innerHTML = `
+            <h2 class="page-title">Contact</h2>
+            <div class="contact-mega-box">
+                <div class="contact-content">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-dark); font-size: 1.5rem;">Informații de contact</h3>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 35px;">
+                        <a href="https://wa.me/40767363612" target="_blank" style="text-decoration: none; color: #2f3542; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 1.1rem; transition: 0.3s;">
+                            <div style="width: 35px; height: 35px; background: #e8f9f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.2rem;"></i></div>
+                            0767 363 612
+                        </a>
+                        <a href="mailto:ostroveanudaniel@gmail.com" style="text-decoration: none; color: #2f3542; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 1.1rem; transition: 0.3s;">
+                            <div style="width: 35px; height: 35px; background: #fceceb; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-envelope" style="color: #ea4335; font-size: 1.1rem;"></i></div>
+                            ostroveanudaniel@gmail.com
+                        </a>
+                        <div style="display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 1.1rem; color: #2f3542;">
+                            <div style="width: 35px; height: 35px; background: #edeef9; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-map-marker-alt" style="color: #4e54c8; font-size: 1.2rem;"></i></div>
+                            Loc. Băneasa, jud. Constanța, România
+                        </div>
+                    </div>
+                    <h3 style="margin-bottom: 15px; color: var(--primary-dark); font-size: 1.3rem;">Lasă-ne un mesaj</h3>
+                    <form onsubmit="alert('Mesajul a fost trimis!'); return false;">
+                        <div class="form-group"><label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block; color: #555;">Nume complet</label><input type="text" required></div>
+                        <div class="form-group"><label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block; color: #555;">Mesaj</label><textarea rows="4" required></textarea></div>
+                        <button type="submit" class="btn-send">Trimite Mesaj</button>
+                    </form>
+                </div>
+                <div style="background:#eee; position: relative;">
+                    <iframe style="width:100%; height:100%; min-height: 400px; border:0; position: absolute; top: 0; left: 0;" src="https://maps.google.com/maps?q=B%C4%83neasa,%20jud.%20Constan%C8%9Ba,%20Rom%C3%A2nia&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen loading="lazy"></iframe>
+                </div>
+            </div>`;
+        return;
+    }
+
+    if (typeof db !== 'undefined' && db[pageId]) {
+        const data = db[pageId];
+        let cards = '';
+        data.lessons.forEach(l => {
+            let videoHtml = l.vid ? `<div class="video-container"><iframe src="${l.vid}" allow="autoplay" allowfullscreen></iframe></div>` : `<div class="no-video"><i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Video indisponibil momentan</p></div>`;
+            let kahootBtn = l.k ? `<a href="${l.k}" target="_blank" class="btn-res btn-kahoot"><img src="https://assets-cdn.kahoot.it/builder/v2/favicon.ico" width="16"> Kahoot</a>` : `<button class="btn-res btn-disabled">Fără Kahoot</button>`;
+            cards += `<div class="lesson-card">${videoHtml}<div class="lesson-content"><div class="lesson-title">${l.t}</div><div class="lesson-desc">${l.d}</div><div class="resources-row">${kahootBtn}</div></div></div>`;
+        });
+        app.innerHTML = `<h2 class="page-title">${data.title}</h2><div class="lessons-grid">${cards}</div>`;
+    }
+}
+
+function renderDocsMain() {
+    const app = document.getElementById('app');
+    if (!app) return;
+    app.innerHTML = `
+        <h2 class="page-title">Documentație și Resurse</h2>
+        <div class="olympiad-grid">
+            <a href="https://drive.google.com/drive/folders/1kw8zZFEmIMjFhdf5wIoSVu3qLvZ5wEbJ?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                <div class="oly-header" style="background: linear-gradient(45deg, #e74c3c, #c0392b);"><i class="fas fa-gavel" style="font-size:2.5rem;"></i><h3>Legislație</h3></div>
+                <div style="padding:15px; color:#555;"><p>Acte normative și legi specifice educației.</p></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1vj-hd62xAvurjyTl4CCeYi12Rz-DC_WS?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                <div class="oly-header" style="background: linear-gradient(45deg, #2ecc71, #27ae60);"><i class="fas fa-calendar-alt" style="font-size:2.5rem;"></i><h3>Programe & Planificări</h3></div>
+                <div style="padding:15px; color:#555;"><p>Programe școlare, planificări anuale și calendaristice.</p></div>
+            </a>
+            <a href="https://docs.google.com/document/d/1kPLoCz2RkfkKTOpUmJ-tFucAhZidLjPAFWwvLDekjRM/edit?tab=t.0" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                <div class="oly-header" style="background: linear-gradient(45deg, #3498db, #2980b9);"><i class="fas fa-book" style="font-size:2.5rem;"></i><h3>Manuale Digitale</h3></div>
+                <div style="padding:15px; color:#555;"><p>Linkuri către manualele digitale oficiale.</p></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1zZyJCY5QvBkWNISr5Od7cshqZiD87H6r?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                <div class="oly-header" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);"><i class="fas fa-clipboard-check" style="font-size:2.5rem;"></i><h3>Evaluare / Portofoliu</h3></div>
+                <div style="padding:15px; color:#555;"><p>Criterii de evaluare și ghid pentru portofoliu.</p></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1zRmR03t-mzZ-M7xzJzoJPcOztChfw_SJ?usp=drive_link" target="_blank" class="olympiad-card" style="text-decoration:none;">
+                <div class="oly-header" style="background: linear-gradient(45deg, #f1c40f, #f39c12);"><i class="fas fa-plus-circle" style="font-size:2.5rem;"></i><h3>Materiale Suplimentare</h3></div>
+                <div style="padding:15px; color:#555;"><p>Resurse extra pentru aprofundarea lecțiilor.</p></div>
+            </a>
+            
+            <div class="olympiad-card" onclick="typeof renderRecomandari === 'function' && renderRecomandari()" style="border-top: 5px solid #e84393;">
+                <div class="oly-header" style="background: linear-gradient(45deg, #e84393, #fd79a8);"><i class="fas fa-film" style="font-size:2.5rem;"></i><h3>Recomandări Cărți & Filme</h3></div>
+                <div style="padding:15px; color:#555;"><p>Selecție de lecturi și filme educative pe vârste (RO & Internațional).</p></div>
+            </div>
+        </div>
+    `;
+}<script>
+    // Placeholder database for lessons to prevent reference errors
+    const db = {
+        clasa5: [],
+        clasa6: [],
+        clasa7: [],
+        clasa8: []
+    };
+
+    // Placeholder navigation render function
+    function render(view) {
+        if (view === 'acasa') {
+            const app = document.getElementById('app');
+            if (app) app.innerHTML = '<h2>Pagina Principală</h2>';
+        }
+    }
+
+    function renderRecomandari() {
+        const app = document.getElementById('app');
+        if (!app) return;
+        app.innerHTML = `
+            <div onclick="renderDocsMain()" class="back-btn"><i class="fas fa-arrow-left"></i> Înapoi la Documentație</div>
+            <h2 class="page-title">Recomandări de Lectură și Filme</h2>
+            
+            <div class="subpage-nav">
+                <button class="subpage-btn active" onclick="showRecTab(this, 'cat1')">11-12 ani (V-VI)</button>
+                <button class="subpage-btn" onclick="showRecTab(this, 'cat2')">13-14 ani (VII-VIII)</button>
+                <button class="subpage-btn" onclick="showRecTab(this, 'cat3')">15-18 ani (Liceu)</button>
+            </div>
+            
+            <div id="rec-content" class="rec-container"></div>
+        `;
+        showRecTab(document.querySelector('.subpage-nav .subpage-btn'), 'cat1');
+    }
+
+    function showRecTab(btn, cat) {
+        document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        
+        let content = '';
+        
+        if (cat === 'cat1') {
+            content = `
+                <div class="rec-category">
+                    <h4><i class="fas fa-book-open" style="color: var(--primary);"></i> Cărți Recomandate (Clasele V-VI)</h4>
+                    <ul class="rec-list">
+                        <li><span class="rec-title">Inocenții</span> - <span class="rec-author">Ioana Pârvulescu</span>
+                            <span class="rec-desc">O carte superbă despre copilărie, descoperirea lumii și a regulilor sociale în România comunistă.</span></li>
+                        <li><span class="rec-title">Minunea (Wonder)</span> - <span class="rec-author">R.J. Palacio</span>
+                            <span class="rec-desc">O lectură esențială despre empatie, acceptarea diferențelor și combaterea bullying-ului.</span></li>
+                        <li><span class="rec-title">Matilda</span> - <span class="rec-author">Roald Dahl</span>
+                            <span class="rec-desc">O poveste despre importanța educației și curajul de a te opune nedreptăților adulților.</span></li>
+                        <li><span class="rec-title">Banii pe înțelesul copiilor</span> - <span class="rec-author">Ligia Goloșoiu</span>
+                            <span class="rec-desc">Inițiere prietenoasă în educația financiară, susținută de BNR.</span>
+                            <a href="https://www.bnr.ro/Proiecte-educationale-7264-Mobile.aspx" target="_blank" class="btn-download-sm"><i class="fas fa-external-link-alt"></i> Vezi resurse BNR</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="rec-category">
+                    <h4><i class="fas fa-film" style="color: var(--accent);"></i> Filme și Animații</h4>
+                    <ul class="rec-list">
+                        <li><span class="rec-title">Străjerii (2018)</span> - Film românesc de aventuri, perfect pentru a discuta despre munca în echipă și rezolvarea conflictelor.</li>
+                        <li><span class="rec-title">Zootopia (2016)</span> - Cum funcționează legile și poliția, și de ce sunt periculoase prejudecățile.</li>
+                        <li><span class="rec-title">Inside Out (Întors pe dos - 2015)</span> - Educație emoțională și înțelegerea propriilor reacții.</li>
+                        <li><span class="rec-title">Amintiri din copilărie (1964)</span> - Excelent pentru o dezbatere despre cum s-au schimbat drepturile și pedepsele elevilor în timp.</li>
+                    </ul>
+                </div>
+            `;
+        } else if (cat === 'cat2') {
+            content = `
+                <div class="rec-category">
+                    <h4><i class="fas fa-book-open" style="color: var(--primary);"></i> Cărți și Ghiduri (Clasele VII-VIII)</h4>
+                    <ul class="rec-list">
+                        <li><span class="rec-title">Elevul și Legea</span> - <span class="rec-author">Asociația VeDem Just</span>
+                            <span class="rec-desc">Ghidul complet al drepturilor și obligațiilor tinerilor din România (răspundere penală, bullying, siguranță).</span>
+                            <a href="https://vedemjust.ro/elevul-si-legea/" target="_blank" class="btn-download-sm"><i class="fas fa-download"></i> Descarcă Gratuit PDF</a>
+                        </li>
+                        <li><span class="rec-title">O scurtă istorie povestită celor tineri</span> - <span class="rec-author">Neagu Djuvara</span>
+                            <span class="rec-desc">Cea mai captivantă formă de a înțelege cum s-a format statul român și instituțiile noastre.</span></li>
+                        <li><span class="rec-title">Ferma Animalelor</span> - <span class="rec-author">George Orwell</span>
+                            <span class="rec-desc">Cea mai bună fabulă pentru a înțelege diferența dintre democrație și dictatură.</span></li>
+                    </ul>
+                </div>
+                <div class="rec-category">
+                    <h4><i class="fas fa-film" style="color: var(--accent);"></i> Filme Recomandate</h4>
+                    <ul class="rec-list">
+                        <li><span class="rec-title">Coborâm la prima (2018)</span> - Film românesc despre toleranță și diversitate socială.</li>
+                        <li><span class="rec-title">Băiatul care a îmblânzit vântul (2019)</span> - Despre dreptul la educație, sărăcie și inovație.</li>
+                        <li><span class="rec-title">Lorax (2012)</span> - Responsabilitatea față de mediu și practicile afacerilor.</li>
+                        <li><span class="rec-title">Enola Holmes (2020)</span> - Drepturile civile, emanciparea femeii și reforma societății.</li>
+                    </ul>
+                </div>
+            `;
+        } else if (cat === 'cat3') {
+            content = `
+                <div class="rec-category">
+                    <h4><i class="fas fa-book-open" style="color: var(--primary);"></i> Cărți Recomandate (Liceu)</h4>
+                    <ul class="rec-list">
+                        <li><span class="rec-title">Jurnalul fericirii</span> - <span class="rec-author">Nicolae Steinhardt</span>
+                            <span class="rec-desc">Despre ce se întâmplă când statul anulează drepturile fundamentale și libertatea de exprimare.</span></li>
+                        <li><span class="rec-title">Să ucizi o pasăre cântătoare</span> - <span class="rec-author">Harper Lee</span>
+                            <span class="rec-desc">O capodoperă absolută despre sistemul judiciar, prezumția de nevinovăție și rasism.</span></li>
+                        <li><span class="rec-title">1984</span> - <span class="rec-author">George Orwell</span>
+                            <span class="rec-desc">Lectură vitală despre manipularea adevărului (fake news) și viața intimă vs. supravegherea în masă.</span></li>
+                        <li><span class="rec-title">Tată bogat, tată sărac</span> - <span class="rec-author">Robert Kiyosaki</span>
+                            <span class="rec-desc">O carte clasică pentru educația financiară a tinerilor, active vs. pasive.</span></li>
+                    </ul>
+                </div>
+                <div class="rec-category">
+                    <h4><i class="fas fa-film" style="color: var(--accent);"></i> Filme și Documentare</h4>
+                    <ul class="rec-list">
+                        <li><span class="rec-title">De ce eu? (2015)</span> - Cel mai bun film românesc de educație juridică. Despre integritate, presiuni politice și sistemul penal.</li>
+                        <li><span class="rec-title">Colectiv (2019)</span> - Documentar despre rolul jurnalismului de investigație într-o democrație și dreptul la sănătate.</li>
+                        <li><span class="rec-title">12 Oameni Furioși (1957)</span> - Demonstrează cum funcționează raționamentul logic, dovezile și „îndoiala rezonabilă” într-un proces.</li>
+                        <li><span class="rec-title">Dilema Socială (The Social Dilemma - Netflix)</span> - Documentar obligatoriu despre siguranța datelor, cyberbullying și manipularea prin algoritmi.</li>
+                        <li><span class="rec-title">Un pas în urma serafimilor (2017)</span> - Dezbate abuzul de putere, moralitatea și curajul de a expune un sistem corupt.</li>
+                    </ul>
+                </div>
+            `;
+        }
+        
+        const recContent = document.getElementById('rec-content');
+        if (recContent) recContent.innerHTML = content;
+    }
+
+    const renderSocialaMain = () => {
+        const app = document.getElementById('app');
+        if (!app) return;
+        app.innerHTML = `<h2 class="page-title">Educație Socială</h2><div class="subpage-nav"><button class="subpage-btn active" onclick="showSocialaTab(this, 'clasa5')">Gândire critică și drepturile copilului</button><button class="subpage-btn" onclick="showSocialaTab(this, 'clasa6')">Educație interculturală</button><button class="subpage-btn" onclick="showSocialaTab(this, 'clasa7')">Educație pentru cetățenie democratică</button><button class="subpage-btn" onclick="showSocialaTab(this, 'clasa8')">Educație economico-financiară</button></div><div id="sociala-content" style="margin-top: 20px;"></div>`;
+        showSocialaTab(document.querySelector('.subpage-nav .subpage-btn'), 'clasa5');
+    }
+
+    function showSocialaTab(btn, classId) {
+        if (btn) {
+            document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        const lectii = db[classId] || [];
+        let cards = '';
+
+        if (lectii.length === 0) {
+            const container = document.getElementById('sociala-content');
+            if (container) container.innerHTML = '<p style="text-align:center; padding: 20px;">Lecțiile pentru această clasă vor fi disponibile în curând.</p>';
+            return;
+        }
+
+        lectii.forEach(l => {
+            let pdfBtn = l.pdf ? `<a href="${l.pdf}" target="_blank" class="btn-res"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
+            let videoBtn = l.video ? `<a href="${l.video}" target="_blank" class="btn-res btn-video"><i class="fas fa-video"></i> Video</a>` : '';
+            let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res btn-ppt"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
+            let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res btn-mindmap"><i class="fas fa-sitemap"></i> Mind Map</a>` : '';
+            let interactivBtn = l.interactiv ? `<a href="${l.interactiv}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${l.interactivTip || 'Interactiv'}</a>` : '';
+
+            cards += `
+                <div class="lesson-card">
+                    <div class="lesson-content">
+                        <div class="lesson-title">${l.titlu}</div>
+                        <div class="resources-row" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+                            ${pdfBtn}
+                            ${videoBtn}
+                            ${pptBtn}
+                            ${mindmapBtn}
+                            ${interactivBtn}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        const container = document.getElementById('sociala-content');
+        if (container) container.innerHTML = `<div class="lessons-grid">${cards}</div>`;
+    }
+
+    const renderOlimpiadaMain = () => {
+        const app = document.getElementById('app');
+        if (app) {
+            app.innerHTML = `<h2 class="page-title">Competiții Școlare</h2><div class="olympiad-grid"><div class="olympiad-card" onclick="renderOliDetails('sociala')"><div class="oly-header" style="background: linear-gradient(45deg, #ff9f43, #ff6b6b);"><i class="fas fa-users" style="font-size:3rem;"></i><br><h3>Olimpiada Ed. Socială</h3></div><div style="padding:20px;"><p>Click pentru a vedea subiectele și baremele</p></div></div><div class="olympiad-card" onclick="renderOliDetails('juridica')"><div class="oly-header" style="background: linear-gradient(45deg, #5f27cd, #341f97);"><i class="fas fa-balance-scale" style="font-size:3rem;"></i><br><h3>Concurs Juridic</h3></div><div style="padding:20px;"><p>Click pentru detalii</p></div></div></div>`;
+        }
+    }
+
+    function renderOliDetails(type) {
+        const app = document.getElementById('app');
+        if (!app) return;
+        const title = type === 'sociala' ? 'Olimpiada de Educație Socială' : 'Concursul Be Legal! Be Cool!';
+        
+        app.innerHTML = `
+            <div onclick="renderOlimpiadaMain()" class="back-btn"><i class="fas fa-arrow-left"></i> Înapoi</div>
+            <h2 class="page-title">${title}</h2>
+            <div class="subpage-nav">
+                <button class="subpage-btn active" onclick="showTab(this, 'judet', '${type}')">Etapa Județeană</button>
+                <button class="subpage-btn" onclick="showTab(this, 'nationala', '${type}')">Etapa Națională</button>
+                <button class="subpage-btn" onclick="showTab(this, 'regulament', '${type}')">Informații și Regulament</button>
+            </div>
+            <div id="tab-content" style="background:white; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);"></div>
+        `;
+        showTab(document.querySelector('.subpage-btn.active'), 'judet', type);
+    }
+
+    function showTab(btn, tab, type) {
+        document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        let content = '';
+        const folderDrive = "https://drive.google.com/drive/folders/1z_o7UYqRrSPbJ3_fSQw1wnUjpBC2VDr2?usp=drive_link";
+
+        if (type === 'sociala') {
+            if (tab === 'judet') {
+                content = `
+                    <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="https://docs.google.com/document/d/1d3aWhRZ_SUjnOLoAaexeg-xrk6Ex7lWC/view" target="_blank" class="btn-doc" style="background: #17c0eb; color: white; border: none;"><i class="fas fa-book-open"></i> Subiecte posibile județeană</a>
+                    </div>
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2025</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1wn1rABRRasIijW0FKtNxrbMjWkKBOiEC/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                            <a href="https://drive.google.com/file/d/18MHLfw7a182tIFbF_az4zBbVXOHj0rQQ/view" target="_blank" class="btn-doc"><i class="fas fa-check-circle"></i> Barem</a>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'nationala') {
+                content = `
+                    <div class="oly-year-card">
+                        <h4>Subiecte Anul 2025</h4>
+                        <div class="doc-links-container">
+                            <a href="https://drive.google.com/file/d/1vaqxK0odQba2WBrUQ1XPNu_wRiYGwY11/view" target="_blank" class="btn-doc"><i class="fas fa-file-pdf"></i> Subiect</a>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'regulament') {
+                content = `
+                    <div class="oly-year-card">
+                        <h4>Informații și Regulament 2026</h4>
+                        <p>Regulamentul pentru Olimpiada de Educație Socială 2026 va fi publicat în curând.</p>
+                    </div>
+                `;
+            }
+        } else {
+            if (tab === 'judet') {
+                content = `
+                    <div class="oly-year-card">
+                        <h4>Faza Județeană 2025</h4>
+                        <div class="doc-links-container">
+                            <a href="${folderDrive}" target="_blank" class="btn-doc"><i class="fas fa-folder-open"></i> Subiecte 2025</a>
+                        </div>
+                    </div>`;
+            } else if (tab === 'regulament') {
+                content = `
+                    <div class="oly-year-card">
+                        <h4>Regulament Be Legal! Be Cool!</h4>
+                        <p>Informațiile și regulamentul concursului juridic vor fi publicate aici.</p>
+                    </div>`;
+            }
+        }
+        
+        const tabContent = document.getElementById('tab-content');
+        if (tabContent) tabContent.innerHTML = content;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        render('acasa');
+    });
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCr_KsoWdDQP3FFIue3lzyJ9h_FJcbRMvc",
+        authDomain: "platforma-elevilor.firebaseapp.com",
+        projectId: "platforma-elevilor",
+        storageBucket: "platforma-elevilor.firebasestorage.app",
+        messagingSenderId: "443060352247",
+        appId: "1:443060352247:web:ae91ac69dabedc45fccff2",
+        measurementId: "G-XG338DLCGE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const btnLogin = document.getElementById('btn-login-google');
+    const btnLogout = document.getElementById('btn-logout-google');
+    const userProfileInfo = document.getElementById('user-profile-info');
+    const userAvatar = document.getElementById('user-avatar');
+    const userDisplayName = document.getElementById('user-display-name');
+
+    if (btnLogin) {
+        btnLogin.addEventListener('click', async () => {
+            try { 
+                await signInWithPopup(auth, provider); 
+            } catch (error) { 
+                alert("Nu te-ai putut loga. Verifică conexiunea la internet sau setările browserului."); 
+            }
+        });
+    }
+
+    if (btnLogout) {
+        btnLogout.addEventListener('click', async () => { 
+            try { 
+                await signOut(auth); 
+            } catch (error) {} 
+        });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        window.isUserLoggedIn = !!user;
+        
+        if (user) {
+            if (btnLogin) btnLogin.style.display = 'none';
+            if (userProfileInfo) userProfileInfo.style.display = 'flex';
+            if (userDisplayName) userDisplayName.textContent = user.displayName;
+            if (userAvatar) userAvatar.src = user.photoURL;
+        } else {
+            if (btnLogin) btnLogin.style.display = 'flex';
+            if (userProfileInfo) userProfileInfo.style.display = 'none';
+            if (userDisplayName) userDisplayName.textContent = '';
+            if (userAvatar) userAvatar.src = '';
+        }
+        
+        const butonActiv = document.querySelector('.nav-links a.active');
+        if (butonActiv) butonActiv.click();
+    });
+</script>
+</body>
+</html>
