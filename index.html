@@ -1497,12 +1497,17 @@
                 let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res btn-ppt"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
                 let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res btn-mindmap"><i class="fas fa-sitemap"></i> Mind Map</a>` : '';
 
-                // Suportă Kahoot / Wordwall / Exercițiu Interactiv
+                // Definire butoane pentru resurse (PDF, PPT, Schemă)
+                let pdfBtn = l.pdf ? `<a href="${l.pdf}" target="_blank" class="btn-res" style="background: #e74c3c; color: white;"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
+                let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res" style="background: #d35400; color: white;"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
+                let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res" style="background: #27ae60; color: white;"><i class="fas fa-sitemap"></i> Schemă</a>` : '';
+
+                // Definire resursă interactivă (Kahoot / Wordwall / Educaplay)
                 let interactivUrl = l.interactiv || l.k;
                 let interactivLabel = l.interactivTip || (l.k ? 'Kahoot' : 'Interactiv');
                 let kahootBtn = interactivUrl 
                     ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
-                    : `<button class="btn-res btn-disabled">Fără Kahoot</button>`;
+                    : '';
 
                 cards += `
                     <div class="lesson-card">
