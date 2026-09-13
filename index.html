@@ -1497,12 +1497,16 @@
                 let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res btn-ppt"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
                 let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res btn-mindmap"><i class="fas fa-sitemap"></i> Mind Map</a>` : '';
 
-                // Definire butoane pentru resurse (PDF, PPT, Schemă)
+                // Extragere sigură titlu și descriere (previne erorile de variabilă nedefinită)
+                let titluText = l.titlu || l.t || '';
+                let descriereText = l.descriere || l.d || '';
+
+                // Generare butoane resurse
                 let pdfBtn = l.pdf ? `<a href="${l.pdf}" target="_blank" class="btn-res" style="background: #e74c3c; color: white;"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
                 let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res" style="background: #d35400; color: white;"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
                 let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res" style="background: #27ae60; color: white;"><i class="fas fa-sitemap"></i> Schemă</a>` : '';
 
-                // Definire resursă interactivă (Kahoot / Wordwall / Educaplay)
+                // Resursă interactivă (Kahoot / Blooket / Wordwall)
                 let interactivUrl = l.interactiv || l.k;
                 let interactivLabel = l.interactivTip || (l.k ? 'Kahoot' : 'Interactiv');
                 let kahootBtn = interactivUrl 
@@ -1511,10 +1515,10 @@
 
                 cards += `
                     <div class="lesson-card">
-                        ${videoHtml}
+                        ${typeof videoHtml !== 'undefined' ? videoHtml : ''}
                         <div class="lesson-content">
-                            <div class="lesson-title">${titlu}</div>
-                            ${descriere ? `<div class="lesson-desc">${descriere}</div>` : ''}
+                            <div class="lesson-title">${titluText}</div>
+                            ${descriereText ? `<div class="lesson-desc">${descriereText}</div>` : ''}
                             <div class="resources-row" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
                                 ${pdfBtn}
                                 ${pptBtn}
