@@ -1302,7 +1302,7 @@
                 let cards = '';
                 data.lessons.forEach(l => {
                     let videoHtml = l.vid ? `<div class="video-container"><iframe src="${l.vid}" allow="autoplay" allowfullscreen></iframe></div>` : `<div class="no-video"><i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Video indisponibil momentan</p></div>`;
-                    let kahootBtn = l.k ? `<a href="${l.k}" target="_blank" class="btn-res btn-kahoot"><img src="https://assets-cdn.kahoot.it/builder/v2/favicon.ico" width="16"> Kahoot</a>` : `<button class="btn-res btn-disabled">Fără Kahoot</button>`;
+                    let kahootBtn = l.k ? `<a href="${l.k}" target="_blank" class="btn-res btn-kahoot"><img src="https://assets-cdn.kahoot.it/builder/v2/favicon.ico" width="16"> Kahoot</a>` : '';
                     cards += `<div class="lesson-card">${videoHtml}<div class="lesson-content"><div class="lesson-title">${l.t}</div><div class="lesson-desc">${l.d}</div><div class="resources-row">${kahootBtn}</div></div></div>`;
                 });
                 app.innerHTML = `<h2 class="page-title">${data.title}</h2><div class="lessons-grid">${cards}</div>`;
