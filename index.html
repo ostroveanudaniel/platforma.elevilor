@@ -1507,9 +1507,8 @@
                 let interactivUrl = l.interactiv || l.k;
                 let interactivLabel = l.interactivTip || (l.k ? 'Kahoot' : 'Interactiv');
                 let kahootBtn = interactivUrl 
-                    ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
-                    : `<button class="btn-res btn-disabled">Fără Kahoot</button>`;
-
+                ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
+                : '';
                 cards += `
                     <div class="lesson-card">
                         ${videoHtml}
