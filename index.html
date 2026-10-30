@@ -9,125 +9,146 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-        /* --- STILURI GENERALE --- */
-        :root {
-            --primary: #4e54c8;
-            --primary-dark: #3c40c6;
-            --accent: #ff4757;
-            --bg-color: #f1f2f6;
-            --text-dark: #2f3542;
-            --kahoot-color: #46178f;
-        }
+    /* --- STILURI GENERALE --- */
+    :root {
+        --primary: #4e54c8;
+        --primary-dark: #3c40c6;
+        --accent: #ff4757;
+        --bg-color: #f1f2f6;
+        --text-dark: #2f3542;
+        --kahoot-color: #46178f;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        
-        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    
+    body { background-color: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* NAVIGARE */
-        nav { background: var(--primary); padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
-        .nav-links { list-style: none; display: flex; gap: 5px; overflow-x: auto; align-items: center; justify-content: flex-start; flex-wrap: wrap; }
-        .nav-links::-webkit-scrollbar { height: 0; }
-        .nav-links li a { display: block; color: rgba(255, 255, 255, 0.85); text-decoration: none; padding: 18px 15px; font-weight: 500; font-size: 0.95rem; border-bottom: 4px solid transparent; transition: 0.3s; white-space: nowrap; }
-        .nav-links li a:hover, .nav-links li a.active { color: white; background: rgba(255,255,255,0.1); border-bottom-color: var(--accent); }
-        .menu-toggle { display: none; padding: 15px; color: white; font-size: 1.5rem; cursor: pointer; background: var(--primary-dark); text-align: center; }
+    /* NAVIGARE */
+    nav { background: var(--primary); padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
+    .nav-links { list-style: none; display: flex; gap: 5px; overflow-x: auto; align-items: center; justify-content: flex-start; flex-wrap: wrap; }
+    .nav-links::-webkit-scrollbar { height: 0; }
+    .nav-links li a { display: block; color: rgba(255, 255, 255, 0.85); text-decoration: none; padding: 18px 15px; font-weight: 500; font-size: 0.95rem; border-bottom: 4px solid transparent; transition: 0.3s; white-space: nowrap; }
+    .nav-links li a:hover, .nav-links li a.active { color: white; background: rgba(255,255,255,0.1); border-bottom-color: var(--accent); }
+    .menu-toggle { display: none; padding: 15px; color: white; font-size: 1.5rem; cursor: pointer; background: var(--primary-dark); text-align: center; }
 
-        /* BUTON LOGARE */
-        .auth-container { margin-left: auto; display: flex; align-items: center; padding-right: 15px; }
-        .btn-login { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: 20px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3); }
-        .btn-login:hover { background: #ff3344; transform: translateY(-2px); }
-        
-        .user-profile { display: none; align-items: center; gap: 12px; color: white; }
-        .user-pic { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-        .user-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
-        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
-        .btn-logout:hover { background: rgba(255,255,255,0.1); border-color: white; }
+    /* BUTON LOGARE */
+    .auth-container { margin-left: auto; display: flex; align-items: center; padding-right: 15px; }
+    .btn-login { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: 20px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3); }
+    .btn-login:hover { background: #ff3344; transform: translateY(-2px); }
+    
+    .user-profile { display: none; align-items: center; gap: 12px; color: white; }
+    .user-pic { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+    .user-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+    .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+    .btn-logout:hover { background: rgba(255,255,255,0.1); border-color: white; }
 
-        /* CONȚINUT */
-        main { flex: 1; padding: 40px 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
-        h2.page-title { text-align: center; font-size: 2rem; color: var(--primary-dark); margin-bottom: 40px; position: relative; padding-bottom: 15px; font-weight: 700; }
-        h2.page-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 5px; background: var(--accent); border-radius: 5px; }
+    /* CONȚINUT */
+    main { flex: 1; padding: 40px 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+    h2.page-title { text-align: center; font-size: 2rem; color: var(--primary-dark); margin-bottom: 40px; position: relative; padding-bottom: 15px; font-weight: 700; }
+    h2.page-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 5px; background: var(--accent); border-radius: 5px; }
 
-        /* CARDURI LECȚII */
-        .lessons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px; }
-        .lesson-card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
-        .lesson-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); border-color: var(--primary); }
+    /* CARDURI LECȚII */
+    .lessons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px; }
+    .lesson-card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+    .lesson-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); border-color: var(--primary); }
 
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-bottom: 1px solid #eee; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-        .no-video { height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #b2bec3; flex-direction: column; text-align: center; padding: 20px; border-bottom: 1px solid #eee; }
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-bottom: 1px solid #eee; }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .no-video { height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #b2bec3; flex-direction: column; text-align: center; padding: 20px; border-bottom: 1px solid #eee; }
 
-        .lesson-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        .lesson-title { font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 10px; font-weight: 700; }
-        .lesson-desc { font-size: 0.9rem; color: #555; margin-bottom: 15px; line-height: 1.5; flex-grow: 1; }
+    .lesson-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    .lesson-title { font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 10px; font-weight: 700; }
+    .lesson-desc { font-size: 0.9rem; color: #555; margin-bottom: 15px; line-height: 1.5; flex-grow: 1; }
 
-        /* STILURI NOI SI OPTIMIZATE PENTRU BUTOANELE DE RESURSE */
-        .resources-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 10px; }
-        .btn-res { flex: 1 1 auto; min-width: 65px; display: inline-flex !important; visibility: visible !important; opacity: 1 !important; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border-radius: 6px; text-decoration: none; color: white !important; font-size: 0.85rem; font-weight: 600; transition: 0.2s; cursor: pointer; border: none; text-align: center; }
-        .btn-res:hover { opacity: 0.9; transform: translateY(-2px); }
+    /* BUTOANE RESURSE PE CARDUL ALB */
+    .resources-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 10px; }
+    .btn-res { 
+        flex: 1 1 auto; 
+        min-width: 65px; 
+        display: inline-flex !important; 
+        visibility: visible !important; 
+        opacity: 1 !important; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 6px; 
+        padding: 8px 12px; 
+        border-radius: 6px; 
+        text-decoration: none; 
+        color: white !important; 
+        font-size: 0.85rem; 
+        font-weight: 600; 
+        transition: 0.2s; 
+        cursor: pointer; 
+        border: none; 
+        text-align: center; 
+    }
+    .btn-res:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        .btn-pdf { background: #e74c3c !important; }
-        .btn-ppt { background: #d35400 !important; }
-        .btn-mindmap { background: #27ae60 !important; }
-        .btn-kahoot { background: var(--kahoot-color) !important; }
+    /* CULORI SPECIFICE BUTOANE */
+    .btn-pdf { background: #007bff !important; color: white !important; }      /* Albastru */
+    .btn-ppt { background: #e74c3c !important; color: white !important; }      /* Roșu */
+    .btn-mindmap { background: #27ae60 !important; color: white !important; }  /* Verde */
+    .btn-kahoot { background: #46178f !important; color: white !important; }   /* Violet */
+    .btn-disabled { background: #dcdde1 !important; color: #7f8fa6 !important; cursor: not-allowed; }
 
-        /* ALTE PAGINI */
-        .contact-mega-box { background: white; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-top: 8px solid var(--accent); overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; }
-        .contact-content { padding: 40px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
-        .btn-send { width: 100%; padding: 12px; background: var(--accent); color: white; font-weight: bold; border:none; border-radius:8px; cursor:pointer;}
-        
-        .olympiad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .olympiad-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; text-align: center; padding-bottom: 20px; transition: 0.3s;}
-        .olympiad-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
-        .oly-header { padding: 30px; color: white; margin-bottom: 15px; }
-        .oly-header h3 { margin-top: 10px; font-size: 1.3rem; }
-        
-        .subpage-nav { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
-        .subpage-btn { padding: 8px 20px; border: 2px solid var(--primary); border-radius: 20px; background: white; color: var(--primary); font-weight:600; cursor: pointer; transition: 0.3s;}
-        .subpage-btn:hover { background: #f1f2f6; }
-        .subpage-btn.active { background: var(--primary); color: white; }
-        .back-btn { display: inline-block; margin-bottom: 20px; color: #666; cursor: pointer; font-weight: 600; }
+    /* ALTE PAGINI */
+    .contact-mega-box { background: white; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-top: 8px solid var(--accent); overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; }
+    .contact-content { padding: 40px; }
+    .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+    .btn-send { width: 100%; padding: 12px; background: var(--accent); color: white; font-weight: bold; border:none; border-radius:8px; cursor:pointer;}
+    
+    .olympiad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+    .olympiad-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; text-align: center; padding-bottom: 20px; transition: 0.3s;}
+    .olympiad-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+    .oly-header { padding: 30px; color: white; margin-bottom: 15px; }
+    .oly-header h3 { margin-top: 10px; font-size: 1.3rem; }
+    
+    .subpage-nav { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+    .subpage-btn { padding: 8px 20px; border: 2px solid var(--primary); border-radius: 20px; background: white; color: var(--primary); font-weight:600; cursor: pointer; transition: 0.3s;}
+    .subpage-btn:hover { background: #f1f2f6; }
+    .subpage-btn.active { background: var(--primary); color: white; }
+    .back-btn { display: inline-block; margin-bottom: 20px; color: #666; cursor: pointer; font-weight: 600; }
 
-        .oly-year-card { background: #f8f9fa; border-left: 5px solid var(--accent); padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
-        .oly-year-card h4 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .doc-links-container { display: flex; flex-wrap: wrap; gap: 10px; }
-        .btn-doc { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: white; border: 1px solid #ccc; color: var(--text-dark); border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
-        .btn-doc:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px);}
-        .btn-doc-important { background: var(--accent); color: white; border-color: var(--accent); }
-        .btn-doc-important:hover { background: #ff3344; }
+    .oly-year-card { background: #f8f9fa; border-left: 5px solid var(--accent); padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+    .oly-year-card h4 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+    .doc-links-container { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn-doc { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: white; border: 1px solid #ccc; color: var(--text-dark); border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+    .btn-doc:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px);}
+    .btn-doc-important { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-doc-important:hover { background: #ff3344; }
 
-        /* Stiluri Recomandări */
-        .rec-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: left; }
-        .rec-category { margin-bottom: 35px; }
-        .rec-category h4 { color: var(--primary-dark); font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .rec-list { list-style: none; padding: 0; }
-        .rec-list li { margin-bottom: 20px; padding-left: 25px; position: relative; line-height: 1.6; }
-        .rec-list li::before { content: '👉'; position: absolute; left: 0; top: 2px; }
-        .rec-title { font-weight: 700; color: #333; font-size: 1.05rem; }
-        .rec-author { font-style: italic; color: var(--accent); font-weight: 600; }
-        .rec-desc { color: #555; font-size: 0.95rem; display: block; margin-top: 5px; }
-        .btn-download-sm { display: inline-flex; align-items: center; gap: 6px; padding: 6px 15px; background: #2ecc71; color: white; border-radius: 20px; text-decoration: none; font-size: 0.85rem; font-weight: bold; margin-top: 8px; transition: 0.3s; box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4); }
-        .btn-download-sm:hover { background: #27ae60; transform: translateY(-2px); }
+    /* Stiluri Recomandări */
+    .rec-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: left; }
+    .rec-category { margin-bottom: 35px; }
+    .rec-category h4 { color: var(--primary-dark); font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    .rec-list { list-style: none; padding: 0; }
+    .rec-list li { margin-bottom: 20px; padding-left: 25px; position: relative; line-height: 1.6; }
+    .rec-list li::before { content: '👉'; position: absolute; left: 0; top: 2px; }
+    .rec-title { font-weight: 700; color: #333; font-size: 1.05rem; }
+    .rec-author { font-style: italic; color: var(--accent); font-weight: 600; }
+    .rec-desc { color: #555; font-size: 0.95rem; display: block; margin-top: 5px; }
+    .btn-download-sm { display: inline-flex; align-items: center; gap: 6px; padding: 6px 15px; background: #2ecc71; color: white; border-radius: 20px; text-decoration: none; font-size: 0.85rem; font-weight: bold; margin-top: 8px; transition: 0.3s; box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4); }
+    .btn-download-sm:hover { background: #27ae60; transform: translateY(-2px); }
 
-        /* Ceasuri globale */
-        .clocks-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: center; margin-top: 10px; }
-        .clock-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .clock-time { font-size: 2rem; font-weight: 700; color: var(--primary-dark); margin: 5px 0; font-variant-numeric: tabular-nums;}
-        .clock-date { font-size: 0.9rem; color: #7f8fa6; font-weight: 500; }
+    /* Ceasuri globale */
+    .clocks-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: center; margin-top: 10px; }
+    .clock-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .clock-time { font-size: 2rem; font-weight: 700; color: var(--primary-dark); margin: 5px 0; font-variant-numeric: tabular-nums;}
+    .clock-date { font-size: 0.9rem; color: #7f8fa6; font-weight: 500; }
 
-        footer { background: #2d3436; color: #b2bec3; text-align: center; padding: 30px; margin-top: auto; }
+    footer { background: #2d3436; color: #b2bec3; text-align: center; padding: 30px; margin-top: auto; }
 
-        @media (max-width: 768px) {
-            nav { display: none; width: 100%; } 
-            nav.active { display: block; }
-            .nav-links { flex-direction: column; padding: 10px 0; align-items: stretch;} 
-            .auth-container { margin: 10px auto; padding: 0; justify-content: center; }
-            .menu-toggle { display: block; }
-            .contact-mega-box { grid-template-columns: 1fr; }
-            .doc-links-container { flex-direction: column; }
-            .btn-doc { justify-content: center; }
-        }
-    </style>
+    @media (max-width: 768px) {
+        nav { display: none; width: 100%; } 
+        nav.active { display: block; }
+        .nav-links { flex-direction: column; padding: 10px 0; align-items: stretch;} 
+        .auth-container { margin: 10px auto; padding: 0; justify-content: center; }
+        .menu-toggle { display: block; }
+        .contact-mega-box { grid-template-columns: 1fr; }
+        .doc-links-container { flex-direction: column; }
+        .btn-doc { justify-content: center; }
+    }
+</style>
 </head>
 <body>
 
@@ -1502,33 +1523,33 @@
                     ? `<div class="video-container"><iframe src="${videoSrc}" allow="autoplay" allowfullscreen></iframe></div>` 
                     : `<div class="no-video"><i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Lecție în lucru</p></div>`;
 
-                // Resurse opționale
-                let pdfBtn = l.pdf ? `<a href="${l.pdf}" target="_blank" class="btn-res"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
-                let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res btn-ppt"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
-                let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res btn-mindmap"><i class="fas fa-sitemap"></i> Mind Map</a>` : '';
+// Resurse opționale
+let pdfBtn = l.pdf ? `<a href="${l.pdf}" target="_blank" class="btn-res btn-pdf"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
+let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res btn-ppt"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
+let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res btn-mindmap"><i class="fas fa-sitemap"></i> Mind Map</a>` : '';
 
-                           // Suportă Kahoot / Wordwall / Exercițiu Interactiv
-                let interactivUrl = l.interactiv || l.k;
-                let interactivLabel = l.interactivTip || (l.k ? 'Kahoot' : 'Interactiv');
-                let kahootBtn = interactivUrl 
-                ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
-                : '';
-                cards += `
-                    <div class="lesson-card">
-                        ${videoHtml}
-                        <div class="lesson-content">
-                            <div class="lesson-title">${titlu}</div>
-                            ${descriere ? `<div class="lesson-desc">${descriere}</div>` : ''}
-                            <div class="resources-row" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
-                                ${pdfBtn}
-                                ${pptBtn}
-                                ${mindmapBtn}
-                                ${kahootBtn}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
+// Suportă Kahoot / Wordwall / Exercițiu Interactiv
+let interactivUrl = l.interactiv || l.k;
+let interactivLabel = l.interactivTip || (l.k ? 'Kahoot' : 'Interactiv');
+let kahootBtn = interactivUrl 
+    ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
+    : '';
+
+cards += `
+    <div class="lesson-card">
+        ${videoHtml}
+        <div class="lesson-content">
+            <div class="lesson-title">${titlu}</div>
+            ${descriere ? `<div class="lesson-desc">${descriere}</div>` : ''}
+            <div class="resources-row">
+                ${pdfBtn}
+                ${pptBtn}
+                ${mindmapBtn}
+                ${kahootBtn}
+            </div>
+        </div>
+    </div>
+`;
 
             const container = document.getElementById('sociala-content');
             if (container) container.innerHTML = `<div class="lessons-grid">${cards}</div>`;
