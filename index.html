@@ -561,9 +561,9 @@
                         ppt: "https://docs.google.com/presentation/d/1SUB7U6hFANxRmCcwhnMqWdwlyk-1WMkT/embed?start=false&delayms=3000&ouid=107980437473866813283&rtpof=true&sd=true",
                         mindmap: "https://drive.google.com/file/d/156LRNmsjp7ADHdj0whNQpDkHIFhVyw32/preview",
                         interactiv: "https://quizlet.com/1141615892/abateri-de-la-valorile-si-principiile-societatii-interculturale-intoleranta-flash-cards/?funnelUUID=b120fce0-d3fc-460a-b73e-6a49e3195486",
-                        interactiv: "https://create.kahoot.it/share/abateri-de-la-valorile-si-principiile-societatii-intoleranta/c3c47759-0c1f-41b4-9e85-aca6364d9b05",
+                        interactiv2: "https://create.kahoot.it/share/abateri-de-la-valorile-si-principiile-societatii-intoleranta/c3c47759-0c1f-41b4-9e85-aca6364d9b05",
 						interactivTip: "Quizlet",
-						interactivTip: "Kahoot"
+						interactivTip2: "Kahoot"
                     },
                     {
                         titlu: "U2L6 - Forme de intoleranță",
@@ -1526,16 +1526,23 @@
                     ? `<div class="video-container"><iframe src="${videoSrc}" allow="autoplay" allowfullscreen></iframe></div>` 
                     : `<div class="no-video"><i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Lecție în lucru</p></div>`;
 
-            // Resurse opționale
+         // Resurse opționale
                 let pdfBtn = l.pdf ? `<a href="${l.pdf}" target="_blank" class="btn-res btn-pdf"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
                 let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res btn-ppt"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
                 let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res btn-mindmap"><i class="fas fa-sitemap"></i> Mind Map</a>` : '';
 
-                // Suportă Kahoot / Wordwall / Exercițiu Interactiv
+                // Prima resursă interactivă (Kahoot / Wordwall / Quizlet)
                 let interactivUrl = l.interactiv || l.k;
                 let interactivLabel = l.interactivTip || (l.k ? 'Kahoot' : 'Interactiv');
                 let kahootBtn = interactivUrl 
                     ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
+                    : '';
+
+                // A doua resursă interactivă (dacă există în lecție)
+                let interactiv2Url = l.interactiv2;
+                let interactiv2Label = l.interactiv2Tip || 'Interactiv';
+                let interactiv2Btn = interactiv2Url 
+                    ? `<a href="${interactiv2Url}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactiv2Label}</a>` 
                     : '';
 
                 cards += `
@@ -1549,6 +1556,7 @@
                                 ${pptBtn}
                                 ${mindmapBtn}
                                 ${kahootBtn}
+                                ${interactiv2Btn}
                             </div>
                         </div>
                     </div>
