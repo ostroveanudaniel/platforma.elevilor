@@ -21,14 +21,7 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
     
-    html, body { 
-    overscroll-behavior-y: contain; 
-    background-color: var(--bg-color); 
-    color: var(--text-dark); 
-    display: flex; 
-    flex-direction: column; 
-    min-height: 100vh; 
-}
+    body { background-color: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
 
     /* NAVIGARE */
     nav { background: var(--primary); padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
@@ -1489,9 +1482,6 @@
         }
 
         // --- FUNCTII CLASE ---
-		function loadVideo(container, videoSrc) {
-            container.innerHTML = `<iframe src="${videoSrc}" allow="autoplay" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"></iframe>`;
-        }
         const renderSocialaMain = () => {
             const app = document.getElementById('app');
             if (!app) return;
@@ -1508,75 +1498,11 @@
             showSocialaTab(document.querySelector('.subpage-nav .subpage-btn'), 'clasa5');
         };
 
-      function showSocialaTab(btn, classId) {
+        function showSocialaTab(btn, classId) {
             if (btn) {
                 document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
             }
-
-            const rawData = (typeof db !== 'undefined' && db[classId]) ? db[classId] : [];
-            const lectii = Array.isArray(rawData) ? rawData : (rawData.lessons || []);
-            
-            if (lectii.length === 0) {
-                const container = document.getElementById('sociala-content');
-                if (container) container.innerHTML = '<p style="text-align:center; padding: 20px;">Lecțiile pentru această clasă vor fi disponibile în curând.</p>';
-                return;
-            }
-
-            let cards = '';
-            lectii.forEach(l => {
-                const titlu = l.titlu || l.t || 'Lecție fără titlu';
-                const descriere = l.descriere || l.desc || l.d || '';
-                const videoSrc = l.video || l.vid;
-
-                // Player optimizat Click-to-Play (încarcă video-ul DOAR la apăsare)
-                let videoHtml = videoSrc 
-                    ? `<div class="video-container" onclick="loadVideo(this, '${videoSrc}')" style="cursor:pointer; background:#1e272e; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
-                        <i class="fas fa-play-circle" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 8px; transition: 0.3s;"></i>
-                        <span style="font-size: 0.85rem; font-weight: 600; color: #dcdde1;">Apasă pentru a viziona video</span>
-                       </div>` 
-                    : `<div class="no-video"><i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Lecție în lucru</p></div>`;
-
-                // Resurse opționale
-                let pdfBtn = l.pdf ? `<a href="${l.pdf}" target="_blank" class="btn-res btn-pdf"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
-                let pptBtn = l.ppt ? `<a href="${l.ppt}" target="_blank" class="btn-res btn-ppt"><i class="fas fa-file-powerpoint"></i> PPT</a>` : '';
-                let mindmapBtn = l.mindmap ? `<a href="${l.mindmap}" target="_blank" class="btn-res btn-mindmap"><i class="fas fa-sitemap"></i> Mind Map</a>` : '';
-
-                // Prima resursă interactivă
-                let interactivUrl = l.interactiv || l.k;
-                let interactivLabel = l.interactivTip || (l.k ? 'Kahoot' : 'Interactiv');
-                let kahootBtn = interactivUrl 
-                    ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
-                    : '';
-
-                // A doua resursă interactivă (dacă există)
-                let interactiv2Url = l.interactiv2;
-                let interactiv2Label = l.interactiv2Tip || 'Interactiv';
-                let interactiv2Btn = interactiv2Url 
-                    ? `<a href="${interactiv2Url}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactiv2Label}</a>` 
-                    : '';
-
-                cards += `
-                    <div class="lesson-card">
-                        ${videoHtml}
-                        <div class="lesson-content">
-                            <div class="lesson-title">${titlu}</div>
-                            ${descriere ? `<div class="lesson-desc">${descriere}</div>` : ''}
-                            <div class="resources-row">
-                                ${pdfBtn}
-                                ${pptBtn}
-                                ${mindmapBtn}
-                                ${kahootBtn}
-                                ${interactiv2Btn}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            const container = document.getElementById('sociala-content');
-            if (container) container.innerHTML = `<div class="lessons-grid">${cards}</div>`;
-        }
 
             const rawData = (typeof db !== 'undefined' && db[classId]) ? db[classId] : [];
             const lectii = Array.isArray(rawData) ? rawData : (rawData.lessons || []);
@@ -1808,9 +1734,9 @@
         }
     </script>
 
- <script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCr_KsoWdDQP3FFIue3lzyJ9h_FJcbRMvc",
@@ -1834,17 +1760,8 @@
 
         if (btnLogin) {
             btnLogin.addEventListener('click', async () => {
-                try { 
-                    // Încercăm deschiderea ferestrei pop-up (funcționează pe PC)
-                    await signInWithPopup(auth, provider); 
-                } catch (error) { 
-                    // Dacă browserul de pe mobil blochează pop-up-ul, trecem automat pe redirecting
-                    try {
-                        await signInWithRedirect(auth, provider);
-                    } catch (err) {
-                        alert("Nu te-ai putut loga. Verifică conexiunea la internet sau setările browserului.");
-                    }
-                }
+                try { await signInWithPopup(auth, provider); } 
+                catch (error) { alert("Nu te-ai putut loga. Verifică conexiunea la internet sau setările browserului."); }
             });
         }
 
@@ -1852,17 +1769,14 @@
             btnLogout.addEventListener('click', async () => { try { await signOut(auth); } catch (error) {} });
         }
 
-        let previousLoginState = null;
-
         onAuthStateChanged(auth, (user) => {
-            const isCurrentlyLoggedIn = !!user;
-            window.isUserLoggedIn = isCurrentlyLoggedIn;
+            window.isUserLoggedIn = !!user;
             
             if (user) {
                 if (btnLogin) btnLogin.style.display = 'none';
                 if (userProfileInfo) userProfileInfo.style.display = 'flex';
-                if (userDisplayName) userDisplayName.textContent = user.displayName || '';
-                if (userAvatar) userAvatar.src = user.photoURL || '';
+                if (userDisplayName) userDisplayName.textContent = user.displayName;
+                if (userAvatar) userAvatar.src = user.photoURL;
             } else {
                 if (btnLogin) btnLogin.style.display = 'flex';
                 if (userProfileInfo) userProfileInfo.style.display = 'none';
@@ -1870,18 +1784,8 @@
                 if (userAvatar) userAvatar.src = '';
             }
             
-            // Re-randăm DOAR când starea de autentificare se schimbă efectiv
-            if (previousLoginState !== isCurrentlyLoggedIn) {
-                previousLoginState = isCurrentlyLoggedIn;
-                
-                const butonActiv = document.querySelector('.nav-links a.active');
-                if (butonActiv) {
-                    const match = butonActiv.getAttribute('onclick')?.match(/'([^']+)'/);
-                    if (match && match[1]) {
-                        render(match[1]);
-                    }
-                }
-            }
+            const butonActiv = document.querySelector('.nav-links a.active');
+            if (butonActiv) butonActiv.click();
         });
     </script>
 </body>
