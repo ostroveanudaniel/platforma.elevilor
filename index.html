@@ -1488,11 +1488,10 @@
             document.getElementById('rec-content').innerHTML = content;
         }
 
-// --- FUNCTII CLASE ---
-        function loadVideo(container, videoSrc) {
+        // --- FUNCTII CLASE ---
+		function loadVideo(container, videoSrc) {
             container.innerHTML = `<iframe src="${videoSrc}" allow="autoplay" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"></iframe>`;
         }
-
         const renderSocialaMain = () => {
             const app = document.getElementById('app');
             if (!app) return;
@@ -1509,7 +1508,7 @@
             showSocialaTab(document.querySelector('.subpage-nav .subpage-btn'), 'clasa5');
         };
 
-        function showSocialaTab(btn, classId) {
+      function showSocialaTab(btn, classId) {
             if (btn) {
                 document.querySelectorAll('.subpage-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -1530,7 +1529,7 @@
                 const descriere = l.descriere || l.desc || l.d || '';
                 const videoSrc = l.video || l.vid;
 
-                // Player optimizat Click-to-Play
+                // Player optimizat Click-to-Play (încarcă video-ul DOAR la apăsare)
                 let videoHtml = videoSrc 
                     ? `<div class="video-container" onclick="loadVideo(this, '${videoSrc}')" style="cursor:pointer; background:#1e272e; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
                         <i class="fas fa-play-circle" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 8px; transition: 0.3s;"></i>
@@ -1550,7 +1549,7 @@
                     ? `<a href="${interactivUrl}" target="_blank" class="btn-res btn-kahoot"><i class="fas fa-gamepad"></i> ${interactivLabel}</a>` 
                     : '';
 
-                // A doua resursă interactivă
+                // A doua resursă interactivă (dacă există)
                 let interactiv2Url = l.interactiv2;
                 let interactiv2Label = l.interactiv2Tip || 'Interactiv';
                 let interactiv2Btn = interactiv2Url 
@@ -1578,6 +1577,15 @@
             const container = document.getElementById('sociala-content');
             if (container) container.innerHTML = `<div class="lessons-grid">${cards}</div>`;
         }
+
+            const rawData = (typeof db !== 'undefined' && db[classId]) ? db[classId] : [];
+            const lectii = Array.isArray(rawData) ? rawData : (rawData.lessons || []);
+            
+            if (lectii.length === 0) {
+                const container = document.getElementById('sociala-content');
+                if (container) container.innerHTML = '<p style="text-align:center; padding: 20px;">Lecțiile pentru această clasă vor fi disponibile în curând.</p>';
+                return;
+            }
 
             let cards = '';
             lectii.forEach(l => {
