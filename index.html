@@ -1579,15 +1579,6 @@
             if (container) container.innerHTML = `<div class="lessons-grid">${cards}</div>`;
         }
 
-            const rawData = (typeof db !== 'undefined' && db[classId]) ? db[classId] : [];
-            const lectii = Array.isArray(rawData) ? rawData : (rawData.lessons || []);
-            
-            if (lectii.length === 0) {
-                const container = document.getElementById('sociala-content');
-                if (container) container.innerHTML = '<p style="text-align:center; padding: 20px;">Lecțiile pentru această clasă vor fi disponibile în curând.</p>';
-                return;
-            }
-
             let cards = '';
             lectii.forEach(l => {
                 // Suportă atât l.titlu cât și l.t pentru titlu
