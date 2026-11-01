@@ -1769,8 +1769,11 @@
             btnLogout.addEventListener('click', async () => { try { await signOut(auth); } catch (error) {} });
         }
 
+let previousLoginState = null;
+
         onAuthStateChanged(auth, (user) => {
-            window.isUserLoggedIn = !!user;
+            const isCurrentlyLoggedIn = !!user;
+            window.isUserLoggedIn = isCurrentlyLoggedIn;
             
             if (user) {
                 if (btnLogin) btnLogin.style.display = 'none';
@@ -1784,8 +1787,18 @@
                 if (userAvatar) userAvatar.src = '';
             }
             
-            const butonActiv = document.querySelector('.nav-links a.active');
-            if (butonActiv) butonActiv.click();
+            // Re-randăm conținutul DOAR când utilizatorul se conectează sau se deconectează.
+            // Aceasta elimină apelul butonActiv.click() care reseta scroll-ul pe mobil.
+            if (previousLoginState !== null && previousLoginState !== isCurrentlyLoggedIn) {
+                const butonActiv = document.querySelector('.nav-links a.active');
+                if (butonActiv) {
+                    const match = butonActiv.getAttribute('onclick')?.match(/'([^']+)'/);
+                    if (match && match[1]) {
+                        render(match[1]);
+                    }
+                }
+            }
+            previousLoginState = isCurrentlyLoggedIn;
         });
     </script>
 </body>
