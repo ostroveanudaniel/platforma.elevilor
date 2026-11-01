@@ -1734,9 +1734,9 @@
         }
     </script>
 
-    <script type="module">
+ <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCr_KsoWdDQP3FFIue3lzyJ9h_FJcbRMvc",
@@ -1760,8 +1760,17 @@
 
         if (btnLogin) {
             btnLogin.addEventListener('click', async () => {
-                try { await signInWithPopup(auth, provider); } 
-                catch (error) { alert("Nu te-ai putut loga. Verifică conexiunea la internet sau setările browserului."); }
+                try { 
+                    // Încercăm deschiderea ferestrei pop-up (funcționează pe PC)
+                    await signInWithPopup(auth, provider); 
+                } catch (error) { 
+                    // Dacă browserul de pe mobil blochează pop-up-ul, trecem automat pe redirecting
+                    try {
+                        await signInWithRedirect(auth, provider);
+                    } catch (err) {
+                        alert("Nu te-ai putut loga. Verifică conexiunea la internet sau setările browserului.");
+                    }
+                }
             });
         }
 
@@ -1769,7 +1778,7 @@
             btnLogout.addEventListener('click', async () => { try { await signOut(auth); } catch (error) {} });
         }
 
-let previousLoginState = null;
+        let previousLoginState = null;
 
         onAuthStateChanged(auth, (user) => {
             const isCurrentlyLoggedIn = !!user;
@@ -1778,8 +1787,8 @@ let previousLoginState = null;
             if (user) {
                 if (btnLogin) btnLogin.style.display = 'none';
                 if (userProfileInfo) userProfileInfo.style.display = 'flex';
-                if (userDisplayName) userDisplayName.textContent = user.displayName;
-                if (userAvatar) userAvatar.src = user.photoURL;
+                if (userDisplayName) userDisplayName.textContent = user.displayName || '';
+                if (userAvatar) userAvatar.src = user.photoURL || '';
             } else {
                 if (btnLogin) btnLogin.style.display = 'flex';
                 if (userProfileInfo) userProfileInfo.style.display = 'none';
@@ -1787,9 +1796,10 @@ let previousLoginState = null;
                 if (userAvatar) userAvatar.src = '';
             }
             
-            // Re-randăm conținutul DOAR când utilizatorul se conectează sau se deconectează.
-            // Aceasta elimină apelul butonActiv.click() care reseta scroll-ul pe mobil.
-            if (previousLoginState !== null && previousLoginState !== isCurrentlyLoggedIn) {
+            // Re-randăm DOAR când starea de autentificare se schimbă efectiv
+            if (previousLoginState !== isCurrentlyLoggedIn) {
+                previousLoginState = isCurrentlyLoggedIn;
+                
                 const butonActiv = document.querySelector('.nav-links a.active');
                 if (butonActiv) {
                     const match = butonActiv.getAttribute('onclick')?.match(/'([^']+)'/);
@@ -1798,7 +1808,6 @@ let previousLoginState = null;
                     }
                 }
             }
-            previousLoginState = isCurrentlyLoggedIn;
         });
     </script>
 </body>
